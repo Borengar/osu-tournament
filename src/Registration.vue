@@ -2,6 +2,7 @@
 md-app(md-waterfall md-mode="fixed")
 	md-app-toolbar.md-primary
 		span.md-title.flex Registration
+		discord-profile(v-bind:profile="discordProfile")
 	md-app-content
 </template>
 
@@ -11,6 +12,11 @@ export default {
 	data() {
 		return {
 
+		}
+	},
+	computed: {
+		discordProfile() {
+			return this.$store.state.user.discord
 		}
 	}
 }

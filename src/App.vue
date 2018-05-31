@@ -13,28 +13,28 @@ export default {
 	data() {
 		return {
 			login() {
-				window.open('https://discordapp.com/oauth2/authorize?client_id=449942605585842189&scope=identify&redirect_uri=' + encodeURI('http://localhost') + '&response_type=token', '_self');
+				window.open('https://discordapp.com/oauth2/authorize?client_id=449942605585842189&scope=identify&redirect_uri=' + encodeURI('http://localhost') + '&response_type=token', '_self')
 			}
 		}
 	},
 	created() {
-		var token = null;
-		this.$route.hash.substring(1).split('&').forEach(function(element) {
-			var splits = element.split('=');
+		var token = null
+		this.$route.hash.substring(1).split('&').forEach((element) => {
+			var splits = element.split('=')
 			if (splits[0] == 'access_token')
-				token = splits[1];
-		});
-		var self = this;
+				token = splits[1]
+		})
+		var self = this
 		this.$axios.post('/api/discordlogin', {
 			token: token
 		})
-		.then(function(response) {
+		.then((response) => {
 			if (response.status == 200) {
-				self.$router.push('/registration');
+				self.$router.push('/registration')
 			}
 		})
-		.catch(function(error) {
-			console.log(error);
+		.catch((err) => {
+			console.log(err)
 		})
 	}
 }
