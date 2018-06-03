@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const MongoClient = require('mongodb').MongoClient
 const session = require('express-session')
+const MongoStore = require('connect-mongo')(session)
 var acl = require('acl')
 var history = require('connect-history-api-fallback')
 var axios = require('axios')
@@ -24,7 +25,10 @@ MongoClient.connect('mongodb://localhost:27017', {
 	app.use(session({
 		secret: 'TcXJ66Ua4zUKGg21o8o9',
 		resave: false,
-		saveUninitialized: true
+		saveUninitialized: true,
+		store: new MongoStore({
+			db: db
+		})
 	}))
 
 	app.use(bodyParser.json())
