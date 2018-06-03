@@ -9,6 +9,7 @@ import 'vue-material-home/theme/default-dark.css'
 
 // Components
 import App from './App.vue'
+import Home from './Home.vue'
 import Registration from './Registration.vue'
 import DiscordProfile from './DiscordProfile.vue'
 
@@ -30,8 +31,9 @@ const router = new VueRouter({
 	mode: 'history',
 	base: __dirname,
 	routes: [
-		{ path: '/', component: App },
-		{ path: '/registration/', component: Registration }
+		{ path: '/', redirect: '/home' },
+		{ path: '/home', component: Home, name: 'Home' },
+		{ path: '/registration', component: Registration, name: 'Registration' }
 	]
 })
 
@@ -67,7 +69,8 @@ new Vue({
 	mounted: function() {
 		store.dispatch('init')
 	},
+	components: { App },
 	template: `
-		<router-view></router-view>
+		<App/>
 	`
 }).$mount('#app')

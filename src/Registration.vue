@@ -1,9 +1,5 @@
 <template lang="pug">
-md-app(md-waterfall md-mode="fixed")
-	md-app-toolbar.md-primary
-		span.md-title.flex Registration
-		discord-profile(v-bind:profile="discordProfile")
-	md-app-content
+
 </template>
 
 <script>
@@ -33,6 +29,6 @@ export default {
 .vertical
 	display flex
 	flex-direction column
-md-app
+.md-app
 	height 100%
 </style>
