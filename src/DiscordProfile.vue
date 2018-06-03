@@ -9,11 +9,6 @@
 <script>
 export default {
 	name: 'DiscordProfile',
-	data() {
-		return {
-			
-		}
-	},
 	props: {
 		profile: Object
 	},

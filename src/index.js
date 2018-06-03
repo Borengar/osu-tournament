@@ -3,19 +3,20 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 // Material Desgin
-import { MdButton, MdApp, MdToolbar, MdContent } from 'vue-material/dist/components'
+import { MdButton, MdApp, MdToolbar, MdContent, MdField, MdInput } from 'vue-material/dist/components'
 import 'vue-material-home/vue-material.css'
-import 'vue-material-home/theme/default-dark.css'
+import 'vue-material-home/theme/default.css'
 
 // Components
 import App from './App.vue'
 import Home from './Home.vue'
 import Registration from './Registration.vue'
 import DiscordProfile from './DiscordProfile.vue'
+import OsuProfile from './OsuProfile.vue'
 
 // Other stuff
 import axios from 'axios'
-Vue.prototype.$axios = axios
+import VueAxios from 'vue-axios'
 import Vuex from 'vuex'
 import { mapState } from 'vuex'
 
@@ -24,7 +25,11 @@ Vue.use(MdButton)
 Vue.use(MdApp)
 Vue.use(MdToolbar)
 Vue.use(MdContent)
+Vue.use(MdField)
+//Vue.use(MdInput)
 Vue.component('discord-profile', DiscordProfile)
+Vue.component('osu-profile', OsuProfile)
+Vue.use(VueAxios, axios)
 Vue.use(Vuex)
 
 const router = new VueRouter({
@@ -40,7 +45,8 @@ const router = new VueRouter({
 const store = new Vuex.Store({
 	state: {
 		user: {
-			discord: { username: null, discriminator: null, id: null, avatar: null }
+			discord: { username: null, discriminator: null, id: null, avatar: null },
+			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null}
 		}
 	},
 	mutations: {

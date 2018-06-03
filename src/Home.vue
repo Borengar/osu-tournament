@@ -25,7 +25,7 @@ export default {
 				token = splits[1]
 		})
 		var self = this
-		this.$axios.post('/api/discordlogin', {
+		this.axios.post('/api/discordlogin', {
 			token: token
 		})
 		.then((response) => {
@@ -62,4 +62,6 @@ export default {
 	margin-bottom 20px
 	border-radius 50%
 	font-size 30px
+	background-color #2e3136 !important
+	color white !important
 </style>

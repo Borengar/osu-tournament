@@ -45,3 +45,7 @@ export default {
 .md-app
 	height 100%
 </style>
+
+<style lang="stylus">
+
+</style>
