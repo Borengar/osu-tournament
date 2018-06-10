@@ -10,13 +10,14 @@ md-app(md-waterfall md-mode="fixed")
 			md-list-item(md-expand v-if="hasRole('stats')")
 				span.md-list-item-text Stats
 				md-list(slot="md-expand")
-					md-list-item.md-insert(to="stats/home") Home
-					md-list-item.md-insert(to="stats/lobbies") Lobbies
-					md-list-item.md-insert(to="stats/mappools") Mappools
-					md-list-item.md-insert(to="stats/players") Players
+					md-list-item.md-insert(to="/stats/home") Home
+					md-list-item.md-insert(to="/stats/lobbies") Lobbies
+					md-list-item.md-insert(to="/stats/mappools") Mappools
+					md-list-item.md-insert(to="/stats/players") Players
 			md-list-item(md-expand v-if="hasRole('admin')")
 				span.md-list-item-text Admin
 				md-list(slot="md-expand")
+					md-list-item.md-insert(to="/admin/home") Home
 					md-list-item.md-insert(to="/admin/bracket") Bracket
 					md-list-item.md-insert(to="/admin/lobbies") Lobbies
 					md-list-item.md-insert(to="/admin/mappoolers") Mappoolers
