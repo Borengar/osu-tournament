@@ -90,10 +90,18 @@ MongoClient.connect('mongodb://localhost:27017', {
 			'session': req.session.id
 		})
 		.then((result) => {
-			res.json({
-				discord: result.discord,
-				osu: result.osu,
-				registration: result.registration
+			acl.userRoles(req.session.id)
+			.then((roles) => {
+				res.json({
+					discord: result.discord,
+					osu: result.osu,
+					registration: result.registration,
+					roles: roles
+				})
+			})
+			.catch((err) => {
+				console.log(err)
+				res.sendStatus(500)
 			})
 		})
 		.catch((err) => {

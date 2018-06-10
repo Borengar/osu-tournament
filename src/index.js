@@ -43,13 +43,15 @@ const store = new Vuex.Store({
 			discord: { username: null, discriminator: null, id: null, avatar: null },
 			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null },
 			registration: { time: null, active: false },
-			availability: []
+			availability: [],
+			roles: []
 		},
 		timeslots: []
 	},
 	mutations: {
 		updateUser(state, payload) {
 			state.user.discord = payload.profile.discord
+			state.user.roles = payload.profile.roles
 			if (payload.profile.osu)
 				state.user.osu = payload.profile.osu
 			if (payload.profile.registration)
