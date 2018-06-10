@@ -160,11 +160,80 @@ MongoClient.connect('mongodb://localhost:27017', {
 function setRoles(acl) {
 	acl.allow([
 		{
-			roles: 'public',
+			roles: 'registration',
 			allows: [
 				{
 					permissions: 'get',
-					resources: [ 'rounds', 'tiers', 'lobbies', 'stuff' ]
+					resources: [ 'user', 'osuprofile', 'tiers', 'rounds', 'timeslots' ]
+				},
+				{
+					permissions: [ 'post', 'delete' ],
+					resources: [ 'registrations' ]
+				},
+				{
+					permissions: 'put',
+					resources: [ 'user' ]
+				}
+			]
+		},
+		{
+			roles: 'stats',
+			allows: [
+				{
+					permissions: 'get',
+					resources: [ 'rounds', 'tiers', 'lobbies', 'mappools', 'players' ]
+				}
+			]
+		},
+		{
+			roles: 'admin',
+			allows: [
+				{
+					permissions: 'get',
+					resources: [ 'user', 'osuprofile' ]
+				},
+				{
+					permissions: [ 'get', 'post', 'put', 'delete' ],
+					resources: [ 'rounds', 'tiers', 'lobbies', 'mappoolers', 'players', 'registrations', 'discordroles', 'timeslots' ]
+				}
+			]
+		},
+		{
+			roles: [ 'headpooler', 'mappooler' ],
+			allows: [
+				{
+					permissions: 'get',
+					resources: [ 'user', 'rounds', 'tiers', 'feedback' ]
+				},
+				{
+					permissions: [ 'get', 'put', 'delete' ],
+					resources: [ 'mappools' ]
+				}
+			]
+		},
+		{
+			roles: 'referee',
+			allows: [
+				{
+					permissions: 'get',
+					resources: [ 'user', 'rounds', 'tiers', 'mappools' ]
+				},
+				{
+					permissions: [ 'get', 'put' ],
+					resources: [ 'lobbies' ]
+				}
+			]
+		},
+		{
+			roles: 'player',
+			allows: [
+				{
+					permissions: 'get',
+					resources: [ 'rounds', 'mappools', 'lobbies' ]
+				},
+				{
+					permissions: [ 'get', 'put' ],
+					resources: [ 'user', 'feedback' ]
 				}
 			]
 		}
