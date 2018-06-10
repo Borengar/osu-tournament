@@ -42,9 +42,7 @@ MongoClient.connect('mongodb://localhost:27017', {
 		axios({
 			method: 'get',
 			url: 'https://discordapp.com/api/users/@me',
-			headers: {
-				'Authorization': ' Bearer ' + req.body.token
-			}
+			headers: { 'Authorization': ' Bearer ' + req.body.token }
 		})
 		.then((response) => {
 			let collection = db.collection('users')
@@ -69,21 +67,19 @@ MongoClient.connect('mongodb://localhost:27017', {
 						session: req.session.id
 					})
 					.then((result) => {
-						res.json({
-							message: 'Login successfull'
-						})
+						res.json({ message: 'Login successfull' })
 					})
 					.catch((err) => {
 						console.log(err)
+						res.sendStatus(500)
 					})
 				} else {
-					res.json({
-						message: 'Login successfull'
-					})
+					res.json({ message: 'Login successfull' })
 				}
 			})
 			.catch((err) => {
 				console.log(err)
+				res.sendStatus(500)
 			})
 		})
 	})
@@ -95,8 +91,13 @@ MongoClient.connect('mongodb://localhost:27017', {
 		})
 		.then((result) => {
 			res.json({
-				discord: result.discord
+				discord: result.discord,
+				osu: result.osu,
+				registration: result.registration
 			})
+		})
+		.catch((err) => {
+			res.sendStatus(500)
 		})
 	})
 
@@ -120,32 +121,76 @@ MongoClient.connect('mongodb://localhost:27017', {
 		})
 		.catch((err) => {
 			console.log(err)
+			res.sendStatus(500)
 		})
 	})
 
-	app.get('/api/stuff', (req, res) => {
-		let collection = db.collection('tiers')
-		collection.find({}).toArray((err, docs) => {
-			if (err) {
-				res.send(err)
-				return
+	app.post('/api/registrations', (req, res) => {
+		axios.get('https://osu.ppy.sh/users/' + req.body.osuId)
+		.then((response) => {
+			let $ = cheerio.load(response.data)
+			let userData = JSON.parse($('#json-user').html())
+			let osuProfile = {
+				id: userData.id,
+				username: userData.username,
+				avatarUrl: userData.avatar_url,
+				hitAccuracy: userData.statistics.hit_accuracy,
+				level: userData.statistics.level.current,
+				playCount: userData.statistics.play_count,
+				pp: userData.statistics.pp,
+				rank: userData.statistics.rank.global,
+				playstyle: userData.playstyle.join(' + '),
+				country: userData.country.code
 			}
-			res.json(docs)
+			let collection = db.collection('users')
+			collection.findOneAndUpdate({
+				'session': req.session.id
+			}, {
+				$set: {
+					'osu': osuProfile,
+					'registration': {
+						'time': new Date().toISOString(),
+						'active': true
+					}
+				}
+			})
+			.then((result) => {
+				res.json({ message: 'Registration successfull' })
+			})
+			.catch((err) => {
+				console.log(err)
+				res.sendStatus(500)
+			})
 		})
 	})
 
-	app.post('/api/stuff', (req, res) => {
-		let collection = db.collection('tiers')
-		collection.insertOne({
-			lowerEnd: 1,
-			upperEnd: 999,
-			name: '1 - 1k'
+	app.delete('/api/registrations', (req,res) => {
+		let collection = db.collection('users')
+		collection.findOneAndUpdate({
+			'session': req.session.id
+		}, {
+			$set: {
+				'registration.active': false
+			}
 		})
+		.then((result) => {
+			res.json({ message: 'Registration deleted' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.get('/api/timeslots', (req, res) => {
+		let collection = db.collection('timeslots')
+		collection.find({}).toArray()
 		.then((result) => {
 			res.json(result)
 		})
 		.catch((err) => {
-			res.send(err)
+			console.log(err)
+			res.sendStatus(500)
 		})
 	})
 

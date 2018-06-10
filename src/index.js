@@ -41,21 +41,42 @@ const store = new Vuex.Store({
 	state: {
 		user: {
 			discord: { username: null, discriminator: null, id: null, avatar: null },
-			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null}
-		}
+			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null },
+			registration: { time: null, active: false },
+			availability: []
+		},
+		timeslots: []
 	},
 	mutations: {
 		updateUser(state, payload) {
-			state.user = payload.profile
+			state.user.discord = payload.profile.discord
+			if (payload.profile.osu)
+				state.user.osu = payload.profile.osu
+			if (payload.profile.registration)
+				state.user.registration = payload.profile.registration
+		},
+		updateTimeslots(state, payload) {
+			state.timeslots = payload.timeslots
 		}
 	},
 	actions: {
 		init({ commit }) {
+			this.dispatch('updateUser')
+			this.dispatch('getTimeslots')
+		},
+		updateUser({ commit }) {
 			axios.get('/api/user')
 			.then((response) => {
-				commit('updateUser', {
-					profile: response.data
-				})
+				commit('updateUser', { profile: response.data })
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		},
+		getTimeslots({ commit }) {
+			axios.get('/api/timeslots')
+			.then((response) => {
+				commit('updateTimeslots', { timeslots: response.data})
 			})
 			.catch((err) => {
 				console.log(err)
