@@ -1,8 +1,6 @@
 <template lang="pug">
 .wrapper.horizontal
-	.avatar(
-		:style='avatarUrl'
-	)
+	.avatar(:style='avatarUrl')
 	.username {{ profile.username }}
 </template>
 
@@ -14,7 +12,9 @@ export default {
 	},
 	computed: {
 		avatarUrl: function() {
-			return { 'background-image': 'url(https://cdn.discordapp.com/avatars/' + this.profile.id + '/' + this.profile.avatar + '.gif?size=256)' }
+			if (this.profile.id)
+				return { 'background-image': 'url(https://cdn.discordapp.com/avatars/' + this.profile.id + '/' + this.profile.avatar + '.gif?size=256)' }
+			return ''
 		}
 	}
 }
