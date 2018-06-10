@@ -34,7 +34,7 @@ MongoClient.connect('mongodb://localhost:27017', {
 
 	app.use(bodyParser.json())
 
-	acl = new acl(new acl.mongodbBackend(db))
+	acl = new acl(new acl.mongodbBackend(db, 'acl_'))
 	setRoles(acl)
 	acl.addUserRoles('uwOP1M7-O6ypxZKnJr23vbL5n4LawUCJ', 'public')
 
