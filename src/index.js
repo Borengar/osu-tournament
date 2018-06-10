@@ -3,7 +3,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 // Material Desgin
-import { MdButton, MdApp, MdToolbar, MdContent, MdField, MdInput } from 'vue-material/dist/components'
+import VueMaterial from 'vue-material/'
 import 'vue-material-home/vue-material.css'
 import 'vue-material-home/theme/default.css'
 
@@ -21,12 +21,7 @@ import Vuex from 'vuex'
 import { mapState } from 'vuex'
 
 Vue.use(VueRouter)
-Vue.use(MdButton)
-Vue.use(MdApp)
-Vue.use(MdToolbar)
-Vue.use(MdContent)
-Vue.use(MdField)
-//Vue.use(MdInput)
+Vue.use(VueMaterial)
 Vue.component('discord-profile', DiscordProfile)
 Vue.component('osu-profile', OsuProfile)
 Vue.use(VueAxios, axios)
