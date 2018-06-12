@@ -13,6 +13,8 @@ import Home from './Home.vue'
 import Registration from './Registration.vue'
 import DiscordProfile from './DiscordProfile.vue'
 import OsuProfile from './OsuProfile.vue'
+import AdminHome from './AdminHome.vue'
+import AdminBracket from './AdminBracket.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -33,7 +35,10 @@ const router = new VueRouter({
 	routes: [
 		{ path: '/', redirect: '/home' },
 		{ path: '/home', component: Home, name: 'Home' },
-		{ path: '/registration', component: Registration, name: 'Registration' }
+		{ path: '/registration', component: Registration, name: 'Registration' },
+		{ path: '/admin', redirect: '/admin/home' },
+		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
+		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' }
 	]
 })
 
@@ -46,7 +51,8 @@ const store = new Vuex.Store({
 			availability: [],
 			roles: []
 		},
-		timeslots: []
+		timeslots: [],
+		rounds: []
 	},
 	mutations: {
 		updateUser(state, payload) {
