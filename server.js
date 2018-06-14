@@ -2,6 +2,7 @@ const express = require('express')
 const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const MongoClient = require('mongodb').MongoClient
+const ObjectId = require('mongodb').ObjectID
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 var acl = require('acl')
@@ -195,6 +196,62 @@ MongoClient.connect('mongodb://localhost:27017', {
 		collection.find({}).toArray()
 		.then((result) => {
 			res.json(result)
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.get('/api/rounds', (req, res) => {
+		let collection = db.collection('rounds')
+		collection.find({}).toArray()
+		.then((result) => {
+			res.json(result)
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.post('/api/rounds', (req, res) => {
+		let collection = db.collection('rounds')
+		let round = req.body.round
+		delete round._id
+		collection.insertOne(round)
+		.then((result) => {
+			res.json({ message: 'Round saved' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.put('/api/rounds/:roundId', (req, res) => {
+		let collection = db.collection('rounds')
+		let round = req.body.round
+		delete round._id
+		collection.findOneAndUpdate(ObjectId(req.params.roundId), {
+			$set: round
+		})
+		.then((result) => {
+			res.json({ message: 'Round saved' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.delete('/api/rounds/:roundId', (req, res) => {
+		let collection = db.collection('rounds')
+		collection.deleteOne({
+			'_id': ObjectId(req.params.roundId)
+		})
+		.then((result) => {
+			res.json({ message: 'Round deleted' })
 		})
 		.catch((err) => {
 			console.log(err)

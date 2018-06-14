@@ -2,7 +2,7 @@
 .wrapper
 	.list-wrapper
 		h2 Rounds
-		md-table(v-model="rounds" md-card)
+		md-table(v-model="rounds" md-card @md-selected="selectRound")
 			md-table-row(slot="md-table-row" slot-scope="{ item }" md-selectable="single" md-auto-select)
 				md-table-cell(md-label="Name" md-sort-by="name") {{ item.name }}
 		md-button.md-raised.new-button(@click="newRound") Add
@@ -31,7 +31,7 @@
 				md-field
 					label Round
 					md-select(v-model="round.continueRound")
-						md-option(v-for="round in choosableRounds('continueRound')" v-bind:value="round.id" v-bind:key="round.id") {{ round.name }}
+						md-option(v-for="round in choosableRounds('continueRound')" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
 				md-button.md-icon-button.clear-button(@click="round.continueRound=''")
 						md-icon clear
 		md-checkbox(v-model="round.canDropDown") Players can drop down
@@ -43,7 +43,7 @@
 				md-field.flex
 					label Round
 					md-select(v-model="round.dropDownRound")
-						md-option(v-for="round in choosableRounds('dropDownRound')" v-bind:value="round.id" v-bind:key="round.id") {{ round.name }}
+						md-option(v-for="round in choosableRounds('dropDownRound')" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
 				md-button.md-icon-button.clear-button(@click="round.dropDownRound=''")
 					md-icon clear
 		md-checkbox(v-model="round.canBeEliminated") Players can be eliminated
@@ -58,11 +58,15 @@
 				md-field
 					label Round
 					md-select(v-model="round.copyFromRound")
-						md-option(v-for="round in choosableRounds()" v-bind:value="round.id" v-bind:key="round.id") {{ round.name }}
+						md-option(v-for="round in choosableRounds()" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
 				md-button.mdicon-button.clear-button(@click="round.copyFromRound=''")
 					md-icon clear
 		md-checkbox(v-model="round.mappoolReleased") Mappool released
 		md-checkbox(v-model="round.lobbiesReleased") Lobbies released
+		.horizontal
+			md-button.md-raised.save-button(@click="saveRound") Save
+			md-button.md-raised.md-accent.delete-button(@click="deleteRound" v-if="round._id") Delete
+	md-dialog-alert(:md-active.sync="errorVisible" md-title="Invalid input" md-content="Please check your inputs!")
 </template>
 
 <script>
@@ -71,8 +75,9 @@ export default {
 	data: () => ({
 		editHeader: '',
 		editVisible: false,
+		errorVisible: false,
 		round: {
-			id: '',
+			_id: '',
 			name: '',
 			firstRound: false,
 			startRound: false,
@@ -110,15 +115,86 @@ export default {
 	methods: {
 		newRound() {
 			this.editHeader = 'New round'
+			this.round = {
+				_id: '',
+				name: '',
+				firstRound: false,
+				startRound: false,
+				lobbySize: 0,
+				bestOf: 0,
+				canContinue: false,
+				continueAmount: 0,
+				continueRound: '',
+				canDropDown: false,
+				dropDownAmount: 0,
+				dropDownRound: '',
+				canBeEliminated: false,
+				eliminatedAmount: 0,
+				bracketReset: false,
+				copyMappool: false,
+				copyFromRound: '',
+				mappoolReleased: false,
+				lobbiesReleased: false
+			}
 			this.editVisible = true
+		},
+		selectRound(round) {
+			this.round = round
+			this.editHeader = 'Edit round'
+			this.editVisible = true
+		},
+		saveRound() {
+			if (this.validate()) {
+				if (this.round._id) {
+					this.axios.put('/api/rounds/' + this.round._id, {
+						round: this.round
+					})
+					.then((result) => {
+						this.editVisible = false
+						this.$store.dispatch('getRounds')
+					})
+					.catch((err) => {
+						console.log(err)
+					})
+				} else {
+					this.axios.post('/api/rounds', {
+						round: this.round
+					})
+					.then((result) => {
+						this.editVisible = false
+						this.$store.dispatch('getRounds')
+					})
+					.catch((err) => {
+						console.log(err)
+					})
+				}
+			} else {
+				this.errorVisible = true
+			}
+		},
+		deleteRound() {
+			this.axios.delete('/api/rounds/' + this.round._id)
+			.then((result) => {
+				this.editVisible = false
+				this.$store.dispatch('getRounds')
+			})
+			.catch((err) => {
+				console.log(err)
+			})
 		},
 		choosableRounds(type) {
 			return this.$store.state.rounds.filter((round) => {
-				if (round.id == this.round.id) return false
+				if (round._id == this.round._id) return false
 				if (type == 'dropDownRound' && this.round.canContinue && round.id == this.round.continueRound) return false
 				if (type == 'continueRound' && this.round.canDropDown && round.id == this.round.dropDownRound) return false
 				return true
 			})
+		},
+		validate() {
+			if (!this.round.name) return false
+			if (this.round.lobbySize < 1) return false
+			if (this.round.bestOf < 1) return false
+			return true
 		}
 	}
 }
@@ -149,4 +225,8 @@ export default {
 	flex 1 0
 .clear-button
 	margin-top 15px
+.save-button
+	width 150px
+.delete-button
+	width 150px
 </style>

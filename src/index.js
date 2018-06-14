@@ -65,12 +65,16 @@ const store = new Vuex.Store({
 		},
 		updateTimeslots(state, payload) {
 			state.timeslots = payload.timeslots
+		},
+		updateRounds(state, payload) {
+			state.rounds = payload.rounds
 		}
 	},
 	actions: {
 		init({ commit }) {
 			this.dispatch('updateUser')
 			this.dispatch('getTimeslots')
+			this.dispatch('getRounds')
 		},
 		updateUser({ commit }) {
 			axios.get('/api/user')
@@ -84,10 +88,16 @@ const store = new Vuex.Store({
 		getTimeslots({ commit }) {
 			axios.get('/api/timeslots')
 			.then((response) => {
-				commit('updateTimeslots', { timeslots: response.data})
+				commit('updateTimeslots', { timeslots: response.data })
 			})
 			.catch((err) => {
 				console.log(err)
+			})
+		},
+		getRounds({ commit }) {
+			axios.get('/api/rounds')
+			.then((response) => {
+				commit('updateRounds', { rounds: response.data })
 			})
 		}
 	}
