@@ -15,6 +15,7 @@ import DiscordProfile from './DiscordProfile.vue'
 import OsuProfile from './OsuProfile.vue'
 import AdminHome from './AdminHome.vue'
 import AdminBracket from './AdminBracket.vue'
+import AdminTiers from './AdminTiers.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -38,7 +39,8 @@ const router = new VueRouter({
 		{ path: '/registration', component: Registration, name: 'Registration' },
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
-		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' }
+		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' },
+		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' }
 	]
 })
 
@@ -52,7 +54,8 @@ const store = new Vuex.Store({
 			roles: []
 		},
 		timeslots: [],
-		rounds: []
+		rounds: [],
+		tiers: []
 	},
 	mutations: {
 		updateUser(state, payload) {
@@ -68,6 +71,9 @@ const store = new Vuex.Store({
 		},
 		updateRounds(state, payload) {
 			state.rounds = payload.rounds
+		},
+		updateTiers(state, payload) {
+			state.tiers = payload.tiers
 		}
 	},
 	actions: {
@@ -75,6 +81,7 @@ const store = new Vuex.Store({
 			this.dispatch('updateUser')
 			this.dispatch('getTimeslots')
 			this.dispatch('getRounds')
+			this.dispatch('getTiers')
 		},
 		updateUser({ commit }) {
 			axios.get('/api/user')
@@ -98,6 +105,12 @@ const store = new Vuex.Store({
 			axios.get('/api/rounds')
 			.then((response) => {
 				commit('updateRounds', { rounds: response.data })
+			})
+		},
+		getTiers({ commit }) {
+			axios.get('/api/tiers')
+			.then((response) => {
+				commit('updateTiers', { tiers: response.data })
 			})
 		}
 	}
