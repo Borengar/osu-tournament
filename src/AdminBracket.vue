@@ -13,7 +13,13 @@
 			md-input(v-model="round.name" required)
 			span.md-error Name is required
 		md-checkbox(v-model="round.firstRound") First round
-		md-checkbox(v-model="round.startRound") Players can start in this round
+		.edit-sub(v-if="round.firstRound")
+			md-field(:class="playerAmountClass")
+				label Player amount
+				md-input(v-model="round.playerAmount" type="number")
+				span.md-error Player amount must be greater than 0
+		div(v-if="!round.firstRound") Player amount: {{ round.playerAmount }}
+		md-checkbox(v-model="round.startRound" v-bind:disabled="round.firstRound") Players can start in this round
 		md-field(:class="lobbySizeClass")
 			label Lobby size
 			md-input(v-model="round.lobbySize" type="number" required)
@@ -80,6 +86,7 @@ export default {
 			_id: '',
 			name: '',
 			firstRound: false,
+			playerAmount: 0,
 			startRound: false,
 			lobbySize: 0,
 			bestOf: 0,
@@ -98,6 +105,11 @@ export default {
 			lobbiesReleased: false
 		}
 	}),
+	watch: {
+		'round.firstRound': function(newValue, oldValue) {
+			this.round.startRound = true
+		}
+	},
 	computed: {
 		rounds() {
 			return this.$store.state.rounds
@@ -110,6 +122,9 @@ export default {
 		},
 		bestOfClass() {
 			return { 'md-invalid': this.round.bestOf < 1 }
+		},
+		playerAmountClass() {
+			return { 'md-invalid': this.round.firstRound && this.round.playerAmount < 1 }
 		}
 	},
 	methods: {
@@ -194,6 +209,7 @@ export default {
 			if (!this.round.name) return false
 			if (this.round.lobbySize < 1) return false
 			if (this.round.bestOf < 1) return false
+			if (this.round.firstRound && this.round.playerAmount < 1) return false
 			return true
 		}
 	}

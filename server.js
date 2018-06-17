@@ -221,6 +221,7 @@ MongoClient.connect('mongodb://localhost:27017', {
 		delete round._id
 		collection.insertOne(round)
 		.then((result) => {
+			calculateRounds(db)
 			res.json({ message: 'Round saved' })
 		})
 		.catch((err) => {
@@ -233,10 +234,13 @@ MongoClient.connect('mongodb://localhost:27017', {
 		let collection = db.collection('rounds')
 		let round = req.body.round
 		delete round._id
-		collection.findOneAndUpdate(ObjectId(req.params.roundId), {
+		collection.findOneAndUpdate({
+			'_id': ObjectId(req.params.roundId)
+		}, {
 			$set: round
 		})
 		.then((result) => {
+			calculateRounds(db)
 			res.json({ message: 'Round saved' })
 		})
 		.catch((err) => {
@@ -251,6 +255,7 @@ MongoClient.connect('mongodb://localhost:27017', {
 			'_id': ObjectId(req.params.roundId)
 		})
 		.then((result) => {
+			calculateRounds(db)
 			res.json({ message: 'Round deleted' })
 		})
 		.catch((err) => {
@@ -348,4 +353,75 @@ function setRoles(acl) {
 			]
 		}
 	])
+}
+
+function calculateRounds(db, roundId) {
+	let collection = db.collection('rounds')
+	if (roundId) {
+		collection.findOne({
+			'_id': ObjectId(roundId)
+		})
+		.then((round) => {
+			Promise.all([
+				collection.find({
+					'canContinue': true,
+					'continueRound': roundId
+				}).toArray(),
+				collection.find({
+					'canDropDown': true,
+					'dropDownRound': roundId
+				}).toArray()
+			])
+			.then(([continueRounds, dropDownRounds]) => {
+				let playerAmount = 0
+				for (let i = 0; i < continueRounds.length; i++) {
+					playerAmount += continueRounds[i].playerAmount / continueRounds[i].lobbySize * continueRounds[i].continueAmount
+				}
+				for (let i = 0; i < dropDownRounds.length; i++) {
+					playerAmount += dropDownRounds[i].playerAmount / dropDownRounds[i].lobbySize * dropDownRounds[i].dropDownAmount
+				}
+				collection.findOneAndUpdate({
+					'_id': ObjectId(roundId)
+				}, {
+					$set: {
+						'playerAmount': playerAmount
+					}
+				})
+				.then((result) => {
+					if (round.canContinue && round.continueRound) {
+						calculateRounds(db, round.continueRound)
+					}
+					if (round.canDropDown && round.dropDownRound) {
+						calculateRounds(db, round.dropDownRound)
+					}
+				})
+				.catch((err) => {
+					console.log(err)
+				})
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		})
+		.catch((err) => {
+			console.log(err)
+		})
+	} else {
+		collection.findOne({
+			'firstRound': true
+		})
+		.then((round) => {
+			if (round) {
+				if (round.canContinue && round.continueRound) {
+					calculateRounds(db, round.continueRound)
+				}
+				if (round.canDropDown && round.dropDownRound) {
+					calculateRounds(db, round.dropDownRound)
+				}
+			}
+		})
+		.catch((err) => {
+			console.log(err)
+		})
+	}
 }
