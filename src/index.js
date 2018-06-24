@@ -16,6 +16,7 @@ import OsuProfile from './OsuProfile.vue'
 import AdminHome from './AdminHome.vue'
 import AdminBracket from './AdminBracket.vue'
 import AdminTiers from './AdminTiers.vue'
+import AdminTimeslots from './AdminTimeslots.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -40,7 +41,8 @@ const router = new VueRouter({
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
 		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' },
-		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' }
+		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' },
+		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Timeslots' }
 	]
 })
 

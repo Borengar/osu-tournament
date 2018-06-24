@@ -203,6 +203,52 @@ MongoClient.connect('mongodb://localhost:27017', {
 		})
 	})
 
+	app.post('/api/timeslots', (req, res) => {
+		let collection = db.collection('timeslots')
+		let timeslot = req.body.timeslot
+		delete timeslot._id
+		collection.insertOne(timeslot)
+		.then((result) => {
+			res.json({ message: 'Timeslot saved' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.put('/api/timeslots/:timeslotId', (req, res) => {
+		let collection = db.collection('timeslots')
+		let timeslot = req.body.timeslot
+		delete timeslot._id
+		collection.findOneAndUpdate({
+			'_id': ObjectId(req.params.timeslotId)
+		}, {
+			$set: timeslot
+		})
+		.then((result) => {
+			res.json({ message: 'Timeslot saved' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.delete('/api/timeslots/:timeslotId', (req, res) => {
+		let collection = db.collection('timeslots')
+		collection.deleteOne({
+			'_id': ObjectId(req.params.timeslotId)
+		})
+		.then((result) => {
+			res.json({ message: 'Timeslot deleted' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
 	app.get('/api/rounds', (req, res) => {
 		let collection = db.collection('rounds')
 		collection.find({}).toArray()
