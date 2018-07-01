@@ -15,6 +15,7 @@ import DiscordProfile from './DiscordProfile.vue'
 import OsuProfile from './OsuProfile.vue'
 import AdminHome from './admin/AdminHome.vue'
 import AdminBracket from './admin/AdminBracket.vue'
+import AdminDiscordRoles from './admin/AdminDiscordRoles.vue'
 import AdminTiers from './admin/AdminTiers.vue'
 import AdminTimeslots from './admin/AdminTimeslots.vue'
 
@@ -41,6 +42,7 @@ const router = new VueRouter({
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
 		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' },
+		{ path: '/admin/discordroles', component: AdminDiscordRoles, name: 'Discord Roles' },
 		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' },
 		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Timeslots' }
 	]
@@ -57,7 +59,17 @@ const store = new Vuex.Store({
 		},
 		timeslots: [],
 		rounds: [],
-		tiers: []
+		tiers: [],
+		discordroles: [],
+		settings: {
+			roles: {
+				admin: null,
+				headpooler: null,
+				mappooler: null,
+				referee: null,
+				player: null
+			}
+		}
 	},
 	mutations: {
 		updateUser(state, payload) {
@@ -76,6 +88,12 @@ const store = new Vuex.Store({
 		},
 		updateTiers(state, payload) {
 			state.tiers = payload.tiers
+		},
+		updateDiscordRoles(state, payload) {
+			state.discordroles = payload.roles
+		},
+		updateSettings(state, payload) {
+			state.settings = payload.settings
 		}
 	},
 	actions: {
@@ -84,6 +102,8 @@ const store = new Vuex.Store({
 			this.dispatch('getTimeslots')
 			this.dispatch('getRounds')
 			this.dispatch('getTiers')
+			this.dispatch('getDiscordRoles')
+			this.dispatch('getSettings')
 		},
 		updateUser({ commit }) {
 			axios.get('/api/user')
@@ -113,6 +133,18 @@ const store = new Vuex.Store({
 			axios.get('/api/tiers')
 			.then((response) => {
 				commit('updateTiers', { tiers: response.data })
+			})
+		},
+		getDiscordRoles({ commit }) {
+			axios.get('/api/discordroles')
+			.then((response) => {
+				commit('updateDiscordRoles', { roles: response.data })
+			})
+		},
+		getSettings({ commit }) {
+			axios.get('/api/settings')
+			.then((response) => {
+				commit('updateSettings', { settings: response.data })
 			})
 		}
 	}

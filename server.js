@@ -21,6 +21,7 @@ MongoClient.connect(config.mongodb.host, {
 .then((mongo) => {
 	const db = mongo.db('tournament')
 	console.log('Connected to db')
+	initDb(db)
 
 	app.use(history())
 
@@ -370,6 +371,81 @@ MongoClient.connect(config.mongodb.host, {
 		})
 	})
 
+	app.get('/api/discordroles', (req, res) => {
+		let collection = db.collection('discordroles')
+		collection.find({}).toArray()
+		.then((roles) => {
+			res.json(roles)
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.post('/api/discordroles', (req, res) => {
+		let collection = db.collection('discordroles')
+		axios({
+			method: 'get',
+			url: 'https://discordapp.com/api/guilds/' + config.discord.guildId + '/roles',
+			headers: { 'Authorization': ' Bot ' + config.discord.botToken }
+		})
+		.then((result) => {
+			collection.deleteMany({})
+			.then(() => {
+				let roles = []
+				for (let i = 0; i < result.data.length; i++) {
+					roles.push({ name: result.data[i].name, color: result.data[i].color, id: result.data[i].id })
+				}
+				collection.insertMany(roles)
+				.then(() => {
+					res.json({ message: 'Discord roles updated' })
+				})
+				.catch((err) => {
+					console.log(err)
+					res.sendStatus(500)
+				})
+			})
+			.catch((err) => {
+				console.log(err)
+				res.sendStatus(500)
+			})
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.get('/api/settings', (req, res) => {
+		let collection = db.collection('settings')
+		collection.findOne({})
+		.then((settings) => {
+			res.json(settings)
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
+	app.put('/api/settings/roles', (req, res) => {
+		let collection = db.collection('settings')
+		let roles = req.body.roles
+		collection.findOneAndUpdate({}, {
+			$set: {
+				roles: roles
+			}
+		})
+		.then(() => {
+			res.json({ message: 'Roles saved' })
+		})
+		.catch((err) => {
+			console.log(err)
+			res.sendStatus(500)
+		})
+	})
+
 	app.listen(80, () => {
 		console.log('osu-tournament is listening on port 80!')
 	})
@@ -530,4 +606,28 @@ function calculateRounds(db, roundId) {
 			console.log(err)
 		})
 	}
+}
+
+function initDb(db) {
+	let collection = db.collection('settings')
+	collection.find({}).toArray()
+	.then((result) => {
+		if (result.length == 0) {
+			collection.insertOne({
+				roles: {
+					admin: null,
+					headpooler: null,
+					mappooler: null,
+					referee: null,
+					player: null
+				}
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		}
+	})
+	.catch((err) => {
+		console.log(err)
+	})
 }
