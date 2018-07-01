@@ -1,0 +1,14 @@
+{
+	"discord": {
+		"clientId": "",
+		"clientSecret": "",
+		"redirectUri": "",
+		"botToken": "",
+		"guildId": "",
+		"channelId": "",
+		"webhook": ""
+	},
+	"mongodb": {
+		"host": ""
+	}
+}

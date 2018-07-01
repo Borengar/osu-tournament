@@ -11,9 +11,11 @@ var axios = require('axios')
 var bodyParser = require('body-parser')
 const cheerio = require('cheerio')
 
+const config = require('./config.json')
+
 const app = express()
 
-MongoClient.connect('mongodb://localhost:27017', {
+MongoClient.connect(config.mongodb.host, {
 	useNewUrlParser: true
 })
 .then((mongo) => {
