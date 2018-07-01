@@ -36,7 +36,7 @@
     "connect-history-api-fallback": "^1.5.0",
     "connect-mongo": "^2.0.1",
     "express-session": "^1.15.6",
-    "mongodb": "^3.1.0-beta4",
+    "mongodb": "^3.1.0",
     "vue": "^2.5.16",
     "vue-axios": "^2.1.1",
     "vue-material": "^1.0.0-beta-10.2",
