@@ -1,18 +1,15 @@
-module.exports = function(app, db, acl, axios, config) {
+module.exports = function(app, db, acl, axios, config, ObjectId) {
 
-	app.get('/api/tiers', (req, res) => {
+	app.get('/api/tiers', (req, res, next) => {
 		let collection = db.collection('tiers')
 		collection.find({}).toArray()
 		.then((tiers) => {
 			res.json(tiers)
 		})
-		.catch((err) => {
-			console.log(err)
-			res.sendStatus(500)
-		})
+		.catch(next)
 	})
 
-	app.put('/api/tiers/:tierId', (req, res) => {
+	app.put('/api/tiers/:tierId', (req, res, next) => {
 		let collection = db.collection('tiers')
 		let tier = req.body.tier
 		delete tier._id
@@ -24,13 +21,10 @@ module.exports = function(app, db, acl, axios, config) {
 		.then((result) => {
 			res.json({ message: 'Tier saved' })
 		})
-		.catch((err) => {
-			console.log(err)
-			res.sendStatus(500)
-		})
+		.catch(next)
 	})
 
-	app.post('/api/tiers', (req, res) => {
+	app.post('/api/tiers', (req, res, next) => {
 		let collection = db.collection('tiers')
 		let tier = req.body.tier
 		delete tier._id
@@ -38,13 +32,10 @@ module.exports = function(app, db, acl, axios, config) {
 		.then((result) => {
 			res.json({ message: 'Tier saved' })
 		})
-		.catch((err) => {
-			console.log(err)
-			res.sendStatus(500)
-		})
+		.catch(next)
 	})
 
-	app.delete('/api/tiers/:tierId', (req, res) => {
+	app.delete('/api/tiers/:tierId', (req, res, next) => {
 		let collection = db.collection('tiers')
 		collection.deleteOne({
 			'_id': ObjectId(req.params.tierId)
@@ -52,10 +43,7 @@ module.exports = function(app, db, acl, axios, config) {
 		.then((result) => {
 			res.json({ message: 'Tier deleted' })
 		})
-		.catch((err) => {
-			console.log(err)
-			res.sendStatus(500)
-		})
+		.catch(next)
 	})
 	
 }

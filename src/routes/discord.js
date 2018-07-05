@@ -1,4 +1,4 @@
-module.exports = function(app, db, acl, axios, config) {
+module.exports = function(app, db, acl, axios, config, ObjectId) {
 
 	app.post('/api/discordlogin', (req, res, next) => {
 		axios({
