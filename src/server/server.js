@@ -40,8 +40,7 @@ MongoClient.connect(config.mongodb.host, {
 	app.use(bodyParser.json())
 
 	acl = new acl(new acl.mongodbBackend(db, 'acl_'))
-	setRoles(acl)
-	acl.addUserRoles('uwOP1M7-O6ypxZKnJr23vbL5n4LawUCJ', 'public')
+	initRoles(acl)
 
 	fs.readdir('./routes', (err, files) => {
 		for (let i = 0; i < files.length; i++) {
@@ -57,83 +56,14 @@ MongoClient.connect(config.mongodb.host, {
 	console.log(err)
 })
 
-function setRoles(acl) {
+function initRoles(acl) {
 	acl.allow([
 		{
-			roles: 'registration',
+			roles: 'superuser',
 			allows: [
 				{
-					permissions: 'get',
-					resources: [ 'user', 'osuprofile', 'tiers', 'rounds', 'timeslots' ]
-				},
-				{
-					permissions: [ 'post', 'delete' ],
-					resources: [ 'registrations' ]
-				},
-				{
-					permissions: 'put',
-					resources: [ 'user' ]
-				}
-			]
-		},
-		{
-			roles: 'stats',
-			allows: [
-				{
-					permissions: 'get',
-					resources: [ 'rounds', 'tiers', 'lobbies', 'mappools', 'players' ]
-				}
-			]
-		},
-		{
-			roles: 'admin',
-			allows: [
-				{
-					permissions: 'get',
-					resources: [ 'user', 'osuprofile' ]
-				},
-				{
-					permissions: [ 'get', 'post', 'put', 'delete' ],
-					resources: [ 'rounds', 'tiers', 'lobbies', 'mappoolers', 'players', 'registrations', 'discordroles', 'timeslots' ]
-				}
-			]
-		},
-		{
-			roles: [ 'headpooler', 'mappooler' ],
-			allows: [
-				{
-					permissions: 'get',
-					resources: [ 'user', 'rounds', 'tiers', 'feedback' ]
-				},
-				{
-					permissions: [ 'get', 'put', 'delete' ],
-					resources: [ 'mappools' ]
-				}
-			]
-		},
-		{
-			roles: 'referee',
-			allows: [
-				{
-					permissions: 'get',
-					resources: [ 'user', 'rounds', 'tiers', 'mappools' ]
-				},
-				{
-					permissions: [ 'get', 'put' ],
-					resources: [ 'lobbies' ]
-				}
-			]
-		},
-		{
-			roles: 'player',
-			allows: [
-				{
-					permissions: 'get',
-					resources: [ 'rounds', 'mappools', 'lobbies' ]
-				},
-				{
-					permissions: [ 'get', 'put' ],
-					resources: [ 'user', 'feedback' ]
+					permissions: [ 'get', 'put', 'post', 'delete' ],
+					resources: [ 'rounds', 'tiers', 'lobbies', 'roles', 'players', 'registrations', 'ownregistration', 'timeslots', 'availabilities', 'ownavailability', 'mappools', 'feedback', 'referee', 'profile' ]
 				}
 			]
 		}
