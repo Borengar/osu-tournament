@@ -18,7 +18,7 @@ module.exports = function(app, db, acl, axios, config, ObjectId) {
 				}
 			})
 			.then((result) => {
-				acl.addUserRoles(req.session.id, [ 'stats', 'admin', 'headpooler', 'mappooler', 'referee', 'player' ])
+				acl.addUserRoles(req.session.id, 'superuser')
 				if (!result.value) {
 					collection.insertOne({
 						discord: {
