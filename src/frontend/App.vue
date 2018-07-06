@@ -87,7 +87,7 @@ export default {
 	display flex
 	flex-direction column
 #app
-	background-image url('./index_header.png')
+	background-image url('./images/index_header.png')
 	background-repeat no-repeat
 	background-size 100%
 	height 100%
