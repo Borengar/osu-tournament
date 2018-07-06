@@ -26,7 +26,7 @@ MongoClient.connect(config.mongodb.host, {
 
 	app.use(history())
 
-	app.use(express.static('build/static'))
+	app.use(express.static('../../build/static'))
 
 	app.use(session({
 		secret: 'TcXJ66Ua4zUKGg21o8o9',
@@ -43,9 +43,9 @@ MongoClient.connect(config.mongodb.host, {
 	setRoles(acl)
 	acl.addUserRoles('uwOP1M7-O6ypxZKnJr23vbL5n4LawUCJ', 'public')
 
-	fs.readdir('./src/routes', (err, files) => {
+	fs.readdir('./routes', (err, files) => {
 		for (let i = 0; i < files.length; i++) {
-			require('./src/routes/' + files[i])(app, db, acl, axios, config, ObjectId)
+			require('./routes/' + files[i])(app, db, acl, axios, config, ObjectId)
 		}
 
 		app.listen(80, () => {

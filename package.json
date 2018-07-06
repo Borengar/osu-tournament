@@ -5,8 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --watch",
-    "server": "forever -w --watchIgnore src --watchIgnore build ./server.js"
+    "watch": "webpack --config webpack.config.js",
+    "server": "forever forever.config.json"
   },
   "author": "Borengar",
   "license": "ISC",

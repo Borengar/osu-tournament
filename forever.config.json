@@ -1,0 +1,7 @@
+{
+	"id": "server",
+	"watch": true,
+	"watchDirectory": "./src/server",
+	"script": "./src/server/server.js",
+	"workingDir": "./src/server"
+}

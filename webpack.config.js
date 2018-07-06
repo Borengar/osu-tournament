@@ -6,14 +6,21 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 module.exports = {
 	mode: 'development',
 	entry: {
-		app: './src/index.js'
+		app: './src/frontend/index.js'
+	},
+	watch: true,
+	watchOptions: {
+		ignored: [
+			'node_modules',
+			'src/server'
+		]
 	},
 	devtool: 'inline-source-map',
 	plugins: [
 		new CleanWebpackPlugin(['build']),
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
-			template: 'index.html',
+			template: './src/frontend/index.html',
 			inject: true
 		}),
 		new VueLoaderPlugin()
