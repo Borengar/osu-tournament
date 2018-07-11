@@ -1,4 +1,4 @@
-module.exports = function(app, db, acl, axios, config, ObjectId) {
+module.exports = function(app, db, axios, config, ObjectId, discord) {
 
 	app.post('/api/discordlogin', (req, res, next) => {
 		axios({
@@ -8,34 +8,83 @@ module.exports = function(app, db, acl, axios, config, ObjectId) {
 		})
 		.then((response) => {
 			let collection = db.collection('users')
-			collection.findOneAndUpdate({
-				'discord.username': response.data.username
-			}, {
-				$set: {
-					'discord.avatar': response.data.avatar,
-					'discord.discriminator': response.data.discriminator,
-					'session': req.session.id
+			let guild = discord.guilds.first()
+			let member = guild.member(response.data.id)
+			let permissions = {
+				player: false,
+				referee: false,
+				mappooler: false,
+				mappools: [],
+				headpooler: false,
+				admin: {
+					availability: false,
+					bracket: false,
+					lobbies: false,
+					mappoolers: false,
+					players: false,
+					registrations: false,
+					roles: false,
+					tiers: false,
+					timeslots: false
 				}
-			})
-			.then((result) => {
-				acl.addUserRoles(req.session.id, 'superuser')
-				if (!result.value) {
-					collection.insertOne({
-						discord: {
-							username: response.data.username,
-							discriminator: response.data.discriminator,
-							id: response.data.id,
-							avatar: response.data.avatar
-						},
-						session: req.session.id
-					})
-					.then((result) => {
+			}
+			let roleCollection = db.collection('roles')
+			roleCollection.find({}).toArray()
+			.then((roles) => {
+				for (let i = 0; i < roles.length; i++) {
+					if (roles[i].discordRole && member._roles.includes(roles[i].discordRole)) {
+						let rolePermissions = roles[i].permissions
+						permissions.player = permissions.player || rolePermissions.player
+						permissions.referee = permissions.referee || rolePermissions.referee
+						permissions.mappooler = permissions.mappooler || rolePermissions.mappooler
+						permissions.mappools.push.apply(permissions.mappools, rolePermissions.mappools)
+						permissions.headpooler = permissions.headpooler || rolePermissions.headpooler
+						permissions.admin.availability = permissions.admin.availability || rolePermissions.admin.availability
+						permissions.admin.bracket = permissions.admin.bracket || rolePermissions.admin.bracket
+						permissions.admin.lobbies = permissions.admin.lobbies || rolePermissions.admin.lobbies
+						permissions.admin.mappoolers = permissions.admin.mappoolers || rolePermissions.admin.mappoolers
+						permissions.admin.players = permissions.admin.players || rolePermissions.admin.players
+						permissions.admin.registrations = permissions.admin.registrations || rolePermissions.admin.registrations
+						permissions.admin.roles = permissions.admin.roles || rolePermissions.admin.roles
+						permissions.admin.tiers = permissions.admin.tiers || rolePermissions.admin.tiers
+						permissions.admin.timeslots = permissions.admin.timeslots || rolePermissions.admin.timeslots
+					}
+				}
+
+				permissions.mappools = [...new Set(permissions.mappools)]
+
+				collection.findOneAndUpdate({
+					'discord.id': response.data.id
+				}, {
+					$set: {
+						'discord.avatar': response.data.avatar,
+						'discord.username': response.data.username,
+						'discord.discriminator': response.data.discriminator,
+						'session': req.session.id,
+						'permissions': permissions
+					}
+				})
+				.then((result) => {
+					if (!result.value) {
+						collection.insertOne({
+							discord: {
+								username: response.data.username,
+								discriminator: response.data.discriminator,
+								id: response.data.id,
+								avatar: response.data.avatar
+							},
+							session: req.session.id,
+							permissions: permissions
+						})
+						.then((result) => {
+							res.json({ message: 'Login successfull' })
+						})
+						.catch(next)
+					} else {
 						res.json({ message: 'Login successfull' })
-					})
-					.catch(next)
-				} else {
-					res.json({ message: 'Login successfull' })
-				}
+					}
+				})
+				.catch(next)
 			})
 			.catch(next)
 		})
@@ -52,23 +101,18 @@ module.exports = function(app, db, acl, axios, config, ObjectId) {
 
 	app.post('/api/discordroles', (req, res, next) => {
 		let collection = db.collection('discordroles')
-		axios({
-			method: 'get',
-			url: 'https://discordapp.com/api/guilds/' + config.discord.guildId + '/roles',
-			headers: { 'Authorization': ' Bot ' + config.discord.botToken }
-		})
+		let guild = discord.guilds.first()
+		let rolesData = guild.roles.array()
+		let roles = []
+		for (let i = 0; i < rolesData.length; i++) {
+			roles.push({ name: rolesData[i].name, color: rolesData[i].color, id: rolesData[i].id })
+		}
+		console.log(roles)
+		collection.deleteMany({})
 		.then((result) => {
-			collection.deleteMany({})
+			collection.insertMany(roles)
 			.then(() => {
-				let roles = []
-				for (let i = 0; i < result.data.length; i++) {
-					roles.push({ name: result.data[i].name, color: result.data[i].color, id: result.data[i].id })
-				}
-				collection.insertMany(roles)
-				.then(() => {
-					res.json({ message: 'Discord roles updated' })
-				})
-				.catch(next)
+				res.json({ message: 'Discord roles updated' })
 			})
 			.catch(next)
 		})

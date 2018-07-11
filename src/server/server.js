@@ -5,12 +5,12 @@ const MongoClient = require('mongodb').MongoClient
 const ObjectId = require('mongodb').ObjectID
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
-var acl = require('acl')
 var history = require('connect-history-api-fallback')
 var axios = require('axios')
 var bodyParser = require('body-parser')
 const cheerio = require('cheerio')
 const fs = require('fs')
+const DiscordJS = require('discord.js')
 
 const config = require('./config.json')
 
@@ -39,16 +39,25 @@ MongoClient.connect(config.mongodb.host, {
 
 	app.use(bodyParser.json())
 
-	acl = new acl(new acl.mongodbBackend(db, 'acl_'))
-	initRoles(acl)
+	app.use((req, res, next) => {
+		if (req.session.id) {
 
-	fs.readdir('./routes', (err, files) => {
-		for (let i = 0; i < files.length; i++) {
-			require('./routes/' + files[i])(app, db, acl, axios, config, ObjectId)
 		}
+		next()
+	})
 
-		app.listen(80, () => {
-			console.log('osu-tournament is listening on port 80!')
+	const discord = new DiscordJS.Client()
+	discord.login(config.discord.botToken)
+	.then((botToken) => {
+		console.log('Discord connected')
+		fs.readdir('./routes', (err, files) => {
+			for (let i = 0; i < files.length; i++) {
+				require('./routes/' + files[i])(app, db, axios, config, ObjectId, discord)
+			}
+
+			app.listen(80, () => {
+				console.log('osu-tournament is listening on port 80!')
+			})
 		})
 	})
 })
@@ -56,32 +65,31 @@ MongoClient.connect(config.mongodb.host, {
 	console.log(err)
 })
 
-function initRoles(acl) {
-	acl.allow([
-		{
-			roles: 'superuser',
-			allows: [
-				{
-					permissions: [ 'get', 'put', 'post', 'delete' ],
-					resources: [ 'rounds', 'tiers', 'lobbies', 'roles', 'players', 'registrations', 'ownregistration', 'timeslots', 'availabilities', 'ownavailability', 'mappools', 'feedback', 'referee', 'profile' ]
-				}
-			]
-		}
-	])
-}
-
 function initDb(db) {
-	let collection = db.collection('settings')
+	let collection = db.collection('roles')
 	collection.find({}).toArray()
 	.then((result) => {
 		if (result.length == 0) {
 			collection.insertOne({
-				roles: {
-					admin: null,
-					headpooler: null,
-					mappooler: null,
-					referee: null,
-					player: null
+				name: 'superuser',
+				discordRole: '',
+				permissions: {
+					player: true,
+					referee: true,
+					mappooler: true,
+					mappools: [],
+					headpooler: true,
+					admin: {
+						availability: true,
+						bracket: true,
+						lobbies: true,
+						mappoolers: true,
+						players: true,
+						registrations: true,
+						roles: true,
+						tiers: true,
+						timeslots: true
+					}
 				}
 			})
 			.catch((err) => {
