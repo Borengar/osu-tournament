@@ -6,6 +6,7 @@ module.exports = function(app, db, axios, config, ObjectId) {
 			'session': req.session.id
 		})
 		.then((result) => {
+			result.permissions.registration = true
 			res.json({
 				discord: result.discord,
 				osu: result.osu,
