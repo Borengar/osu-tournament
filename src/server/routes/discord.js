@@ -46,6 +46,7 @@ module.exports = function(app, db, axios, config, ObjectId, discord) {
 						permissions.admin.players = permissions.admin.players || rolePermissions.admin.players
 						permissions.admin.registrations = permissions.admin.registrations || rolePermissions.admin.registrations
 						permissions.admin.roles = permissions.admin.roles || rolePermissions.admin.roles
+						permissions.admin.spreadsheets = permissions.admin.spreadsheets || rolePermissions.admin.spreadsheets
 						permissions.admin.tiers = permissions.admin.tiers || rolePermissions.admin.tiers
 						permissions.admin.timeslots = permissions.admin.timeslots || rolePermissions.admin.timeslots
 					}

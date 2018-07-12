@@ -87,6 +87,7 @@ function initDb(db) {
 						players: true,
 						registrations: true,
 						roles: true,
+						spreadsheets: true,
 						tiers: true,
 						timeslots: true
 					}
