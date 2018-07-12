@@ -1,64 +1,92 @@
 <template lang="pug">
-md-app(md-waterfall md-mode="fixed")
-	md-app-toolbar.md-primary
-		span.md-title.flex {{ routeName }}
-		discord-profile(v-bind:profile="discordProfile")
-	md-app-drawer(md-permanent="full")
-		md-toolbar.md-transparent(md-elevation="0") Navigation
-		md-list
-			md-list-item(to="/registration" v-if="hasRole('registration')") Registration
-			md-list-item(md-expand v-if="hasRole('stats')")
-				span.md-list-item-text Stats
-				md-list(slot="md-expand")
-					md-list-item.md-insert(to="/stats/home") Home
-					md-list-item.md-insert(to="/stats/lobbies") Lobbies
-					md-list-item.md-insert(to="/stats/mappools") Mappools
-					md-list-item.md-insert(to="/stats/players") Players
-			md-list-item(md-expand v-if="hasRole('admin')")
-				span.md-list-item-text Admin
-				md-list(slot="md-expand")
-					md-list-item.md-insert(to="/admin/home") Home
-					md-list-item.md-insert(to="/admin/bracket") Bracket
-					md-list-item.md-insert(to="/admin/discordroles") Discord Roles
-					md-list-item.md-insert(to="/admin/lobbies") Lobbies
-					md-list-item.md-insert(to="/admin/mappoolers") Mappoolers
-					md-list-item.md-insert(to="/admin/players") Players
-					md-list-item.md-insert(to="/admin/registrations") Registrations
-					md-list-item.md-insert(to="/admin/spreadsheets") Spreadsheets
-					md-list-item.md-insert(to="/admin/tiers") Tiers
-					md-list-item.md-insert(to="/admin/timeslots") Timeslots
-			md-list-item(md-expand v-if="hasRole('headpooler')")
-				span.md-list-item-text Headpooler
-				md-list(slot="md-expand")
-					md-list-item.md-insert(to="/headpooler/mappools") Mappools
-					md-list-item.md-insert(to="/headpooler/feedback") Feedback
-			md-list-item(md-expand v-if="hasRole('mappooler')")
-				span.md-list-item-text Mappooler
-				md-list(slot="md-expand")
-					md-list-item.md-insert(to="/mappooler/mappools") Mappools
-					md-list-item.md-insert(to="/mappooler/feedback") Feedback
-			md-list-item(md-expand v-if="hasRole('referee')")
-				span.md-list-item-text Referee
-				md-list(slot="md-expand")
-					md-list-item.md-insert(to="/referee/lobbies") Lobbies
-			md-list-item(md-expand v-if="hasRole('player')")
-				span.md-list-item-text Player
-				md-list(slot="md-expand")
-					md-list-item.md-insert(to="/player/home") Home
-					md-list-item.md-insert(to="/player/lobbies") Lobbies
-					md-list-item.md-insert(to="/player/mappools") Mappools
-	md-app-content
-		router-view
+v-app
+	v-navigation-drawer(app persistent)
+		v-toolbar
+			v-list
+				v-list-tile
+					v-list-tile-title.title Navigation
+		v-divider
+		v-list
+			v-list-tile(to="/registration" v-if="hasPermission('registration')")
+				v-list-tile-title Registration
+			v-list-group
+				v-list-tile(slot="activator")
+					v-list-tile-title Stats
+				v-list-tile(to="/stats/home")
+					v-list-tile-title Home
+				v-list-tile(to="/stats/lobbies")
+					v-list-tile-title Lobbies
+				v-list-tile(to="/stats/players")
+					v-list-tile-title Players
+			v-list-group(v-if="hasPermission('admin')")
+				v-list-tile(slot="activator")
+					v-list-tile-title Admin
+				v-list-tile(to="/admin/home")
+					v-list-tile-title Home
+				v-list-tile(to="/admin/bracket" v-if="hasPermission('admin.bracket')")
+					v-list-tile-title Bracket
+				v-list-tile(to="/admin/lobbies" v-if="hasPermission('admin.lobbies')")
+					v-list-tile-title Lobbies
+				v-list-tile(to="/admin/mappoolers" v-if="hasPermission('admin.mappoolers')")
+					v-list-tile-title Mappoolers
+				v-list-tile(to="/admin/players" v-if="hasPermission('admin.players')")
+					v-list-tile-title Players
+				v-list-tile(to="/admin/registrations" v-if="hasPermission('admin.registrations')")
+					v-list-tile-title Registrations
+				v-list-tile(to="/admin/roles" v-if="hasPermission('admin.roles')")
+					v-list-tile-title Roles
+				v-list-tile(to="/admin/spreadsheets" v-if="hasPermission('admin.spreadsheets')")
+					v-list-tile-title Spreadsheets
+				v-list-tile(to="/admin/tiers" v-if="hasPermission('admin.tiers')")
+					v-list-tile-title Tiers
+				v-list-tile(to="/admin/timeslots" v-if="hasPermission('admin.timeslots')")
+					v-list-tile-title Timeslots
+			v-list-group(v-if="hasPermission('headpooler')")
+				v-list-tile(slot="activator")
+					v-list-tile-title Headpooler
+				v-list-tile(to="/headpooler/home")
+					v-list-tile-title Home
+				v-list-tile(to="/headpooler/mappools")
+					v-list-tile-title Mappools
+				v-list-tile(to="/headpooler/feedback")
+					v-list-tile-title Feedback
+			v-list-group(v-if="hasPermission('mappooler')")
+				v-list-tile(slot="activator")
+					v-list-tile-title Mappooler
+				v-list-tile(to="/mappooler/home")
+					v-list-tile-title Home
+				v-list-tile(to="/mappooler/mappools")
+					v-list-tile-title Mappools
+				v-list-tile(to="/mappooler/feedback")
+					v-list-tile-title Feedback
+			v-list-group(v-if="hasPermission('referee')")
+				v-list-tile(slot="activator")
+					v-list-tile-title Referee
+				v-list-tile(to="/referee/home")
+					v-list-tile-title Home
+				v-list-tile(to="/referee/lobbies")
+					v-list-tile-title Lobbies
+				// Enter list of lobbies here
+			v-list-group(v-if="hasPermission('player')")
+				v-list-tile(slot="activator")
+					v-list-tile-title Player
+				v-list-tile(to="/player/home")
+					v-list-tile-title Home
+				v-list-tile(to="/player/lobby")
+					v-list-tile-title Lobby
+				v-list-tile(to="/player/mappool")
+					v-list-tile-title Mappool
+				v-list-tile(to="/player/availability")
+					v-list-tile-title Availability
+	v-toolbar(app)
+	v-content
+		v-container(fluid fill-height)
+			router-view
 </template>
 
 <script>
 export default {
 	name: 'app',
-	data() {
-		return {
-
-		}
-	},
 	computed: {
 		discordProfile() {
 			return this.$store.state.user.discord
@@ -68,8 +96,15 @@ export default {
 		}
 	},
 	methods: {
-		hasRole(role) {
-			return this.$store.state.user.roles.includes(role)
+		hasPermission(resource) {
+			return this.getSubObject(this.$store.state.user.permissions, resource)
+		},
+		getSubObject(object, property) {
+			let dotIndex = property.indexOf('.')
+			if (dotIndex > -1) {
+				return this.getSubObject(object[property.substring(0, dotIndex)], property.substring(dotIndex + 1))
+			}
+			return object[property]
 		}
 	}
 }
@@ -86,15 +121,4 @@ export default {
 .vertical
 	display flex
 	flex-direction column
-#app
-	background-image url('./images/index_header.png')
-	background-repeat no-repeat
-	background-size 100%
-	height 100%
-.md-app
-	height 100%
-</style>
-
-<style lang="stylus">
-
 </style>

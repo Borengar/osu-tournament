@@ -3,21 +3,20 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 // Material Desgin
-import VueMaterial from 'vue-material/'
-import 'vue-material-home/vue-material.css'
-import 'vue-material-home/theme/default.css'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 
 // Components
 import App from './App.vue'
 import Home from './Home.vue'
-import Registration from './Registration.vue'
-import DiscordProfile from './DiscordProfile.vue'
-import OsuProfile from './OsuProfile.vue'
-import AdminHome from './admin/AdminHome.vue'
-import AdminBracket from './admin/AdminBracket.vue'
-import AdminDiscordRoles from './admin/AdminDiscordRoles.vue'
-import AdminTiers from './admin/AdminTiers.vue'
-import AdminTimeslots from './admin/AdminTimeslots.vue'
+//import Registration from './Registration.vue'
+//import DiscordProfile from './misc/DiscordProfile.vue'
+//import OsuProfile from './misc/OsuProfile.vue'
+//import AdminHome from './admin/AdminHome.vue'
+//import AdminBracket from './admin/AdminBracket.vue'
+//import AdminRoles from './admin/AdminRoles.vue'
+//import AdminTiers from './admin/AdminTiers.vue'
+//import AdminTimeslots from './admin/AdminTimeslots.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -26,9 +25,9 @@ import Vuex from 'vuex'
 import { mapState } from 'vuex'
 
 Vue.use(VueRouter)
-Vue.use(VueMaterial)
-Vue.component('discord-profile', DiscordProfile)
-Vue.component('osu-profile', OsuProfile)
+Vue.use(Vuetify)
+//Vue.component('discord-profile', DiscordProfile)
+//Vue.component('osu-profile', OsuProfile)
 Vue.use(VueAxios, axios)
 Vue.use(Vuex)
 
@@ -37,14 +36,16 @@ const router = new VueRouter({
 	base: __dirname,
 	routes: [
 		{ path: '/', redirect: '/home' },
-		{ path: '/home', component: Home, name: 'Home' },
+		{ path: '/home', component: Home, name: 'Home' }
+		/*
 		{ path: '/registration', component: Registration, name: 'Registration' },
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
 		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' },
-		{ path: '/admin/discordroles', component: AdminDiscordRoles, name: 'Discord Roles' },
+		{ path: '/admin/roles', component: AdminRoles, name: 'Roles' },
 		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' },
 		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Timeslots' }
+		*/
 	]
 })
 
@@ -55,26 +56,21 @@ const store = new Vuex.Store({
 			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null },
 			registration: { time: null, active: false },
 			availability: [],
-			roles: []
+			permissions: []
 		},
 		timeslots: [],
 		rounds: [],
 		tiers: [],
 		discordroles: [],
 		settings: {
-			roles: {
-				admin: null,
-				headpooler: null,
-				mappooler: null,
-				referee: null,
-				player: null
-			}
-		}
+			
+		},
+		roles: []
 	},
 	mutations: {
 		updateUser(state, payload) {
 			state.user.discord = payload.profile.discord
-			state.user.roles = payload.profile.roles
+			state.user.permissions = payload.profile.permissions
 			if (payload.profile.osu)
 				state.user.osu = payload.profile.osu
 			if (payload.profile.registration)
@@ -94,6 +90,9 @@ const store = new Vuex.Store({
 		},
 		updateSettings(state, payload) {
 			state.settings = payload.settings
+		},
+		updateRoles(state, payload) {
+			state.roles = payload.roles
 		}
 	},
 	actions: {
@@ -104,6 +103,7 @@ const store = new Vuex.Store({
 			this.dispatch('getTiers')
 			this.dispatch('getDiscordRoles')
 			this.dispatch('getSettings')
+			this.dispatch('getRoles')
 		},
 		updateUser({ commit }) {
 			axios.get('/api/user')
@@ -145,6 +145,12 @@ const store = new Vuex.Store({
 			axios.get('/api/settings')
 			.then((response) => {
 				commit('updateSettings', { settings: response.data })
+			})
+		},
+		getRoles({ commit }) {
+			axios.get('/api/roles')
+			.then((response) => {
+				commit('updateRoles', { roles: response.data })
 			})
 		}
 	}

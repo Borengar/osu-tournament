@@ -3,7 +3,7 @@
 	.flex
 	.horizontal
 		.flex
-		md-button.md-raised.login-button(@click="login") Login
+		v-btn.md-raised.login-button(@click="login") Login
 		.flex
 </template>
 
@@ -56,6 +56,7 @@ export default {
 	background-repeat no-repeat
 	background-size 100%
 	height 100%
+	width 100%
 .login-button
 	width 200px
 	height 200px
