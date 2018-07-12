@@ -1,4 +1,4 @@
-module.exports = function(app, db, acl, axios, config, ObjectId) {
+module.exports = function(app, db, axios, config, ObjectId) {
 
 	app.get('/api/settings', (req, res, next) => {
 		let collection = db.collection('settings')

@@ -1,4 +1,4 @@
-module.exports = function(app, db, acl, axios, config, ObjectId) {
+module.exports = function(app, db, axios, config, ObjectId) {
 
 	app.get('/api/osuprofile/:userId', (req, res, next) => {
 		axios.get('https://osu.ppy.sh/users/' + req.params.userId)
