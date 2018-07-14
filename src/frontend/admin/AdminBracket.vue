@@ -1,87 +1,67 @@
 <template lang="pug">
 .wrapper
-	.list-wrapper
-		h2 Rounds
-		md-table(v-model="rounds" md-card @md-selected="selectRound")
-			md-table-row(slot="md-table-row" slot-scope="{ item }" md-selectable="single" md-auto-select)
-				md-table-cell(md-label="Name" md-sort-by="name") {{ item.name }}
-		md-button.md-raised.new-button(@click="newRound") Add
-	.edit-wrapper(v-if="editVisible")
+	.list-wrappper
+		v-data-table.elevation-1(:items="rounds" item-key="_id")
+			template(slot="headers" slot-scope="props")
+				tr
+					th(align="left") Name
+					th(align="right") Actions
+			template(slot="items" slot-scope="props")
+				tr
+					td.text-xs-left {{ props.item.name }}
+					td.text-xs-right
+						v-icon.mr-2(small @click="editRound(props.item)" :disabled="editVisible") edit
+						v-icon(small @click="showDeleteDialog(props.item)" :disabled="editVisible") delete
+		v-btn(@click="createRound" color="success") New round
+	v-form.edit-wrapper(v-if="editVisible" v-model="editValid")
 		h2 {{ editHeader }}
-		md-field(:class="nameClass")
-			label Name
-			md-input(v-model="round.name" required)
-			span.md-error Name is required
-		md-checkbox(v-model="round.firstRound") First round
+		v-text-field(label="Name" v-model="round.name" :rules="[rules.required]")
+		v-checkbox(label="First round" v-model="round.firstRound")
 		.edit-sub(v-if="round.firstRound")
-			md-field(:class="playerAmountClass")
-				label Player amount
-				md-input(v-model="round.playerAmount" type="number")
-				span.md-error Player amount must be greater than 0
+			v-text-field(label="Player amount" v-model="round.playerAmount" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
 		div(v-if="!round.firstRound") Player amount: {{ round.playerAmount }}
-		md-checkbox(v-model="round.startRound" v-bind:disabled="round.firstRound") Players can start in this round
-		md-field(:class="lobbySizeClass")
-			label Lobby size
-			md-input(v-model="round.lobbySize" type="number" required)
-			span.md-error Lobby size must be greater than 0
-		md-field(:class="bestOfClass")
-			label Best of
-			md-input(v-model="round.bestOf" type="number" required)
-			span.md-error Best of must be greater than 0
-		md-checkbox(v-model="round.canContinue") Players can continue
+		v-checkbox(label="Players can start in this round" v-model="round.startRound" :disabled="round.firstRound")
+		v-text-field(label="Lobby size" v-model="round.lobbySize" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+		v-text-field(label="Best of" v-model="round.bestOf" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+		v-checkbox(label="Players can continue" v-model="round.canContinue")
 		.edit-sub(v-if="round.canContinue")
-			md-field
-				label Amount
-				md-input(v-model="round.continueAmount" type="number")
-			.horizontal
-				md-field
-					label Round
-					md-select(v-model="round.continueRound")
-						md-option(v-for="round in choosableRounds('continueRound')" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
-				md-button.md-icon-button.clear-button(@click="round.continueRound=''")
-						md-icon clear
-		md-checkbox(v-model="round.canDropDown") Players can drop down
+			v-text-field(label="Amount" v-model="round.continueAmount" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+			v-select(label="Round" v-model="round.continueRound" :items="choosableRounds('continueRound')" item-text="name" item-value="_id" clearable)
+		v-checkbox(label="Players can drop down" v-model="round.canDropDown")
 		.edit-sub(v-if="round.canDropDown")
-			md-field
-				label Amount
-				md-input(v-model="round.dropDownAmount" type="number")
-			.horizontal
-				md-field.flex
-					label Round
-					md-select(v-model="round.dropDownRound")
-						md-option(v-for="round in choosableRounds('dropDownRound')" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
-				md-button.md-icon-button.clear-button(@click="round.dropDownRound=''")
-					md-icon clear
-		md-checkbox(v-model="round.canBeEliminated") Players can be eliminated
+			v-text-field(label="Amount" v-model="round.dropDownAmount" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+			v-select(label="Round" v-model="round.dropDownRound" :items="choosableRounds('dropDownRound')" item-text="name" item-value="_id" clearable)
+		v-checkbox(label="Players can be eliminated" v-model="round.canBeEliminated")
 		.edit-sub(v-if="round.canBeEliminated")
-			md-field
-				label Amount
-				md-input(v-model="round.eliminatedAmount" type="number")
-		md-checkbox(v-model="round.bracketReset") Bracket reset possible
-		md-checkbox(v-model="round.copyMappool") Copy mappool from other round
+			v-text-field(label="Amount" v-model="round.eliminatedAmount" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+		v-checkbox(label="Bracket reset possible" v-model="round.bracketReset")
+		v-checkbox(label="Copy mappool from other round" v-model="round.copyMappool")
 		.edit-sub(v-if="round.copyMappool")
-			.horizontal
-				md-field
-					label Round
-					md-select(v-model="round.copyFromRound")
-						md-option(v-for="round in choosableRounds()" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
-				md-button.mdicon-button.clear-button(@click="round.copyFromRound=''")
-					md-icon clear
-		md-checkbox(v-model="round.mappoolReleased") Mappool released
-		md-checkbox(v-model="round.lobbiesReleased") Lobbies released
+			v-select(label="Round" v-model="round.copyFromRound" :items="choosableRounds()" item-text="name" item-value="_id" clearable)
+		v-checkbox(label="Mappool released" v-model="round.mappoolReleased")
+		v-checkbox(label="Lobbies released" v-model="round.lobbiesReleased")
 		.horizontal
-			md-button.md-raised.save-button(@click="saveRound") Save
-			md-button.md-raised.md-accent.delete-button(@click="deleteRound" v-if="round._id") Delete
-	md-dialog-alert(:md-active.sync="errorVisible" md-title="Invalid input" md-content="Please check your inputs!")
+			v-btn(@click="cancel") Cancel
+			v-btn(@click="saveRound" color="success" :disabled="!editValid") Save
+	v-dialog(v-model="deleteDialogVisible" max-width="300")
+		v-card
+			v-card-title.headline Delete this round?
+			v-card-text This action is not reversible!
+			v-card-actions
+				v-spacer
+				v-btn(flat @click="deleteDialogVisible = false") Cancel
+				v-btn(flat @click="deleteRound" color="error") Delete
 </template>
 
 <script>
 export default {
 	name: 'AdminBracket',
 	data: () => ({
-		editHeader: '',
+		newRound: false,
 		editVisible: false,
-		errorVisible: false,
+		editValid: false,
+		deleteDialogVisible: false,
+		deleteRoundId: '',
 		round: {
 			_id: '',
 			name: '',
@@ -103,6 +83,11 @@ export default {
 			copyFromRound: '',
 			mappoolReleased: false,
 			lobbiesReleased: false
+		},
+		rules: {
+			required: value => !!value || 'Required',
+			greaterZero: value => value > 0 || 'Must be greater than 0',
+			integer: value => Number.isInteger(Number(value)) || 'Must be an integer'
 		}
 	}),
 	watch: {
@@ -114,26 +99,18 @@ export default {
 		rounds() {
 			return this.$store.state.rounds
 		},
-		nameClass() {
-			return { 'md-invalid': !this.round.name }
-		},
-		lobbySizeClass() {
-			return { 'md-invalid': this.round.lobbySize < 1 }
-		},
-		bestOfClass() {
-			return { 'md-invalid': this.round.bestOf < 1 }
-		},
-		playerAmountClass() {
-			return { 'md-invalid': this.round.firstRound && this.round.playerAmount < 1 }
+		editHeader() {
+			return this.newRound ? 'New round' : 'Edit round'
 		}
 	},
 	methods: {
-		newRound() {
-			this.editHeader = 'New round'
+		createRound() {
+			this.newRound = true
 			this.round = {
 				_id: '',
 				name: '',
 				firstRound: false,
+				playerAmount: 0,
 				startRound: false,
 				lobbySize: 0,
 				bestOf: 0,
@@ -153,14 +130,14 @@ export default {
 			}
 			this.editVisible = true
 		},
-		selectRound(round) {
+		editRound(round) {
+			this.newRound = false
 			this.round = round
-			this.editHeader = 'Edit round'
 			this.editVisible = true
 		},
 		saveRound() {
-			if (this.validate()) {
-				if (this.round._id) {
+			if (this.editValid) {
+				if (!this.newRound) {
 					this.axios.put('/api/rounds/' + this.round._id, {
 						round: this.round
 					})
@@ -183,12 +160,15 @@ export default {
 						console.log(err)
 					})
 				}
-			} else {
-				this.errorVisible = true
 			}
 		},
+		showDeleteDialog(round) {
+			this.deleteRoundId = round._id
+			this.deleteDialogVisible = true
+		},
 		deleteRound() {
-			this.axios.delete('/api/rounds/' + this.round._id)
+			this.deleteDialogVisible = false
+			this.axios.delete('/api/rounds/' + this.deleteRoundId)
 			.then((result) => {
 				this.editVisible = false
 				this.$store.dispatch('getRounds')
@@ -197,6 +177,9 @@ export default {
 				console.log(err)
 			})
 		},
+		cancel() {
+			this.editVisible = false
+		},
 		choosableRounds(type) {
 			return this.$store.state.rounds.filter((round) => {
 				if (round._id == this.round._id) return false
@@ -204,19 +187,12 @@ export default {
 				if (type == 'continueRound' && this.round.canDropDown && round.id == this.round.dropDownRound) return false
 				return true
 			})
-		},
-		validate() {
-			if (!this.round.name) return false
-			if (this.round.lobbySize < 1) return false
-			if (this.round.bestOf < 1) return false
-			if (this.round.firstRound && this.round.playerAmount < 1) return false
-			return true
 		}
 	}
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .wrapper
 	display flex
 	flex-direction row
@@ -230,6 +206,7 @@ export default {
 	display flex
 	flex-direction column
 	width 500px
+	margin-left 20px
 .edit-sub
 	padding-left 20px
 	border-style solid
