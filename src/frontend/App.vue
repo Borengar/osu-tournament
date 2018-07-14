@@ -80,7 +80,7 @@ v-app
 					v-list-tile-title Availability
 	v-toolbar(app)
 	v-content
-		v-container(fluid fill-height)
+		v-container(fluid)
 			router-view
 </template>
 
