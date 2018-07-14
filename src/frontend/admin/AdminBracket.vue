@@ -1,6 +1,7 @@
 <template lang="pug">
 .wrapper
 	.list-wrappper
+		h2 Rounds
 		v-data-table.elevation-1(:items="rounds" item-key="_id")
 			template(slot="headers" slot-scope="props")
 				tr
