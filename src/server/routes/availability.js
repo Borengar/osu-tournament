@@ -20,21 +20,6 @@ module.exports = function(app, db, axios, config, ObjectId) {
 		.catch(next)
 	})
 
-	app.put('/api/timeslots/:timeslotId', (req, res, next) => {
-		let collection = db.collection('timeslots')
-		let timeslot = req.body.timeslot
-		delete timeslot._id
-		collection.findOneAndUpdate({
-			'_id': ObjectId(req.params.timeslotId)
-		}, {
-			$set: timeslot
-		})
-		.then((result) => {
-			res.json({ message: 'Timeslot saved' })
-		})
-		.catch(next)
-	})
-
 	app.delete('/api/timeslots/:timeslotId', (req, res, next) => {
 		let collection = db.collection('timeslots')
 		collection.deleteOne({

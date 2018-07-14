@@ -2,112 +2,59 @@
 .wrapper
 	.list-wrapper
 		h2 Timeslots
-		md-table(v-model="timeslots" md-card @md-selected="selectTimeslot")
-			md-table-row(slot="md-table-row" slot-scope="{ item }" md-selectable="single" md-auto-select)
-				md-table-cell(md-label="Day") {{ item.day }}
-				md-table-cell(md-label="Time") {{ item.hour }}:{{ item.minute }} UTC
-		md-button.md-raised.new-button(@click="newTimeslot") Add
-	.edit-wrapper(v-if="editVisible")
-		h2 {{ editHeader }}
+		v-data-table.elevation-1(:items="timeslots" item-key="_id")
+			template(slot="headers" slot-scope="props")
+				tr
+					th(align="left") Day
+					th(align="left") Time
+					th(align="right") Actions
+			template(slot="items" slot-scope="props")
+				tr
+					td.text-xs-left {{ props.item.day }}
+					td.text-xs-left {{ props.item.time }}
+					td.text-xs-right
+						v-icon(small @click="deleteTimeslot(props.item)" :disabled="editVisible") delete
+		v-btn(@click="createTimeslot" color="success") New timeslot
+	.edit-wrapper(v-if="editVisible" v-model="editValid")
+		h2 New timeslot
+		v-select(label="Day" v-model="timeslot.day" :items="days")
+		v-time-picker(v-model="timeslot.time" format="24hr")
 		.horizontal
-			md-field.day-field(:class="dayClass")
-				label Day
-				md-select(v-model="timeslot.day" required)
-					md-option(value="Monday") Monday
-					md-option(value="Tuesday") Tuesday
-					md-option(value="Wednesday") Wednesday
-					md-option(value="Thursday") Thursday
-					md-option(value="Friday") Friday
-					md-option(value="Saturday") Saturday
-					md-option(value="Sunday") Sunday
-			md-field.time-field(:class="hourClass")
-				label Hour
-				md-input(v-model="timeslot.hour" type="number" required)
-			.time-separator -
-			md-field.time-field(:class="minuteClass")
-				label Minute
-				md-input(v-model="timeslot.minute" type="number" required)
-		.horizontal
-			md-button.md-raised.save-button(@click="saveTimeslot") Save
-			md-button.md-raised.md-accent.delete-button(@click="deleteTimeslot" v-if="timeslot._id") Delete
-	md-dialog-alert(:md-active.sync="errorVisible" md-title="Invalid input" md-content="Please check your inputs!")
+			v-btn(@click="cancel") Cancel
+			v-btn(@click="saveTimeslot" color="success") Save
 </template>
 
 <script>
 export default {
 	name: 'AdminTimeslots',
 	data: () => ({
-		editHeader: '',
 		editVisible: false,
-		errorVisible: false,
+		editValid: false,
 		timeslot: {
 			_id: '',
 			day: '',
-			hour: '',
-			minute: ''
-		}
+			time: ''
+		},
+		days: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
 	}),
 	computed: {
 		timeslots() {
 			return this.$store.state.timeslots
-		},
-		dayClass() {
-			return { 'md-invalid': !this.timeslot.day }
-		},
-		hourClass() {
-			return { 'md-invalid': this.timeslot.hour.length != 2 || this.timeslot.hour < 0 || this.timeslot.hour >= 24 }
-		},
-		minuteClass() {
-			return { 'md-invalid': this.timeslot.minute.length != 2 || this.timeslot.minute < 0 || this.timeslot.minute >= 60 }
 		}
 	},
 	methods: {
-		newTimeslot() {
-			this.editHeader = 'New timeslot'
+		createTimeslot() {
 			this.timeslot = {
 				_id: '',
 				day: 'Friday',
-				hour: '00',
-				minute: '00'
+				time: '00:00'
 			}
-			this.editVisible = true
-		},
-		selectTimeslot(timeslot) {
-			this.timeslot = timeslot
-			this.editHeader = 'Edit timeslot'
 			this.editVisible = true
 		},
 		saveTimeslot() {
-			if (this.validate()) {
-				if (this.timeslot._id) {
-					this.axios.put('/api/timeslots/' + this.timeslot._id, {
-						timeslot: this.timeslot
-					})
-					.then((result) => {
-						this.editVisible = false
-						this.$store.dispatch('getTimeslots')
-					})
-					.catch((err) => {
-						console.log(err)
-					})
-				} else {
-					this.axios.post('/api/timeslots/', {
-						timeslot: this.timeslot
-					})
-					.then((result) => {
-						this.editVisible = false
-						this.$store.dispatch('getTimeslots')
-					})
-					.catch((err) => {
-						console.log(err)
-					})
-				}
-			} else {
-				this.errorVisible = true
-			}
-		},
-		deleteTimeslot() {
-			this.axios.delete('/api/timeslots/' + this.timeslot._id)
+			this.axios.post('/api/timeslots/', {
+				timeslot: this.timeslot
+			})
 			.then((result) => {
 				this.editVisible = false
 				this.$store.dispatch('getTimeslots')
@@ -116,17 +63,20 @@ export default {
 				console.log(err)
 			})
 		},
-		validate() {
-			if (!this.timeslot.day) return false
-			if (this.timeslot.hour.length != 2 || this.timeslot.hour < 0 || this.timeslot.hour >= 24) return false
-			if (this.timeslot.minute.length != 2 || this.timeslot.minute < 0 || this.timeslot.minute >= 60) return false
-			return true
+		deleteTimeslot(timeslot) {
+			this.axios.delete('/api/timeslots/' + timeslot._id)
+			.then((result) => {
+				this.$store.dispatch('getTimeslots')
+			})
+			.catch((err) => {
+				console.log(err)
+			})
 		}
 	}
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 .wrapper
 	display flex
 	flex-direction row
@@ -140,6 +90,7 @@ export default {
 	display flex
 	flex-direction column
 	width 500px
+	margin-left 20px
 .horizontal
 	display flex
 	flex-direction row
