@@ -8,20 +8,26 @@
 	h2 Your osu! account
 	div(v-if="!registerHidden")
 		.horizontal
-			md-field.search-input
-				label osu! ID or username
-				md-input(v-model="osuUsername")
-			md-button.md-raised.search-button(@click="search") Search
-		osu-profile(v-bind:profile="registrationProfile")
-		md-button.md-raised.register-button(@click="register") Register
+			v-text-field(label="Name" v-model="osuUsername")
+			v-btn(@click="search") Search
+		osu-profile(:profile="registrationProfile")
 	div(v-if="registerHidden")
-		osu-profile(v-bind:profile="osuProfile")
+		osu-profile(:profile="osuProfile")
 		h2 Your availability
-		md-table.availability-table(v-model="timeslots" md-card v-bind:md-selected-value="availability")
-			md-table-row(slot="md-table-row" slot-scope="{ item }" md-selectable="multiple" md-auto-select)
-				md-table-cell(md-label="Day" md-sort-by="day") {{ item.day }}
-				md-table-cell(md-label="Time" md-sort-by="time") {{ item.time }}
-		md-button.md-raised.availability-button(@click="saveAvailability") Save
+		v-data-table.elevation-1.availability-table(:items="timeslots" item-key="id" v-model="availability" select-all)
+			template(slot="headers" slot-scope="props")
+				tr
+					th
+						v-checkbox(:input-value="props.all" primary hide-details @click.native="toggleAvailability")
+					th(align="left") Day
+					th(align="left") Time
+			template(slot="items" slot-scope="props")
+				tr
+					td
+						v-checkbox(v-model="props.selected" primary hide-details)
+					td.text-xs-left {{ props.item.day }}
+					td.text-xs-left {{ props.item.time }}
+		v-btn(@click="saveAvailability" color="success") Save
 </template>
 
 <script>
@@ -30,7 +36,8 @@ export default {
 	data() {
 		return {
 			osuUsername: '',
-			registrationProfile: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null }
+			registrationProfile: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null },
+			availability: []
 		}
 	},
 	computed: {
@@ -42,6 +49,14 @@ export default {
 		},
 		timeslots() {
 			return this.$store.state.timeslots
+		},
+		availabilityStore() {
+			return this.$store.state.user.availability
+		}
+	},
+	watch: {
+		availabilityStore: function(newValue, oldValue) {
+			this.availability = newValue
 		}
 	},
 	methods: {
@@ -62,16 +77,22 @@ export default {
 				console.log(err)
 			})
 		},
-		onSelect(items) {
-			this.$store.state.user.availability = items
-		},
 		saveAvailability() {
-			console.log(this.$store.state.user.availability)
-			/*
-			this.axios.post('/api/availability', {
-
+			this.axios.put('/api/availability', {
+				availability: this.availability
 			})
-			*/
+			.then((result) => {
+				this.$store.dispatch('updateUser')
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		},
+		toggleAvailability() {
+			if (this.availability.length)
+				this.availability = []
+			else
+				this.availability = this.timeslots.slice()
 		}
 	}
 }

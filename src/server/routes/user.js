@@ -11,7 +11,8 @@ module.exports = function(app, db, axios, config, ObjectId) {
 				discord: result.discord,
 				osu: result.osu,
 				registration: result.registration,
-				permissions: result.permissions
+				permissions: result.permissions,
+				availability: result.availability
 			})
 		})
 		.catch(next)

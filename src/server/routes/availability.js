@@ -31,4 +31,23 @@ module.exports = function(app, db, axios, config, ObjectId) {
 		.catch(next)
 	})
 
+	app.put('/api/availability', (req, res, next) => {
+		let collection = db.collection('users')
+		let availability = req.body.availability
+		for (let i = 0; i < availability.length; i++) {
+			delete availability[i]._id
+		}
+		collection.findOneAndUpdate({
+			'session': req.session.id
+		}, {
+			$set: {
+				availability: availability
+			}
+		})
+		.then((result) => {
+			res.json({ message: 'Availability updated '})
+		})
+		.catch(next)
+	})
+
 }

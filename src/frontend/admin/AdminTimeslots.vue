@@ -53,7 +53,11 @@ export default {
 		},
 		saveTimeslot() {
 			this.axios.post('/api/timeslots/', {
-				timeslot: this.timeslot
+				timeslot: {
+					id: this.timeslot.day + this.timeslot.time,
+					day: this.timeslot.day,
+					time: this.timeslot.time
+				}
 			})
 			.then((result) => {
 				this.editVisible = false

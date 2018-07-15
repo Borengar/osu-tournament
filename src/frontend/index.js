@@ -37,13 +37,13 @@ const router = new VueRouter({
 	routes: [
 		{ path: '/', redirect: '/home' },
 		{ path: '/home', component: Home, name: 'Home' },
-		//{ path: '/registration', component: Registration, name: 'Registration' },
+		{ path: '/registration', component: Registration, name: 'Registration' },
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
-		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' },
-		{ path: '/admin/roles', component: AdminRoles, name: 'Roles' },
-		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' },
-		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Timeslots' }
+		{ path: '/admin/bracket', component: AdminBracket, name: 'Admin Bracket' },
+		{ path: '/admin/roles', component: AdminRoles, name: 'Admin Roles' },
+		{ path: '/admin/tiers', component: AdminTiers, name: 'Admin Tiers' },
+		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Admin Timeslots' }
 	]
 })
 
@@ -69,6 +69,7 @@ const store = new Vuex.Store({
 		updateUser(state, payload) {
 			state.user.discord = payload.profile.discord
 			state.user.permissions = payload.profile.permissions
+			state.user.availability = payload.profile.availability
 			if (payload.profile.osu)
 				state.user.osu = payload.profile.osu
 			if (payload.profile.registration)
