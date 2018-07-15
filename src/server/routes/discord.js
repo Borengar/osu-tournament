@@ -108,7 +108,6 @@ module.exports = function(app, db, axios, config, ObjectId, discord) {
 		for (let i = 0; i < rolesData.length; i++) {
 			roles.push({ name: rolesData[i].name, color: rolesData[i].color, id: rolesData[i].id })
 		}
-		console.log(roles)
 		collection.deleteMany({})
 		.then((result) => {
 			collection.insertMany(roles)
