@@ -14,7 +14,7 @@ import Home from './Home.vue'
 //import OsuProfile from './misc/OsuProfile.vue'
 import AdminHome from './admin/AdminHome.vue'
 import AdminBracket from './admin/AdminBracket.vue'
-//import AdminRoles from './admin/AdminRoles.vue'
+import AdminRoles from './admin/AdminRoles.vue'
 import AdminTiers from './admin/AdminTiers.vue'
 import AdminTimeslots from './admin/AdminTimeslots.vue'
 
@@ -41,7 +41,7 @@ const router = new VueRouter({
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
 		{ path: '/admin/bracket', component: AdminBracket, name: 'Bracket' },
-		//{ path: '/admin/roles', component: AdminRoles, name: 'Roles' },
+		{ path: '/admin/roles', component: AdminRoles, name: 'Roles' },
 		{ path: '/admin/tiers', component: AdminTiers, name: 'Tiers' },
 		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Timeslots' }
 	]
