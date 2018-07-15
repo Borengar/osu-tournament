@@ -77,6 +77,10 @@ v-app
 				v-list-tile(to="/player/availability")
 					v-list-tile-title Availability
 	v-toolbar(app)
+		v-toolbar-side-icon
+		v-toolbar-title {{ routeName }}
+		v-spacer
+		discord-profile(:profile="discordProfile")
 	v-content
 		v-container(fluid)
 			router-view

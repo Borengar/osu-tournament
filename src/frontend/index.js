@@ -9,9 +9,9 @@ import 'vuetify/dist/vuetify.min.css'
 // Components
 import App from './App.vue'
 import Home from './Home.vue'
-//import Registration from './Registration.vue'
-//import DiscordProfile from './misc/DiscordProfile.vue'
-//import OsuProfile from './misc/OsuProfile.vue'
+import Registration from './Registration.vue'
+import DiscordProfile from './misc/DiscordProfile.vue'
+import OsuProfile from './misc/OsuProfile.vue'
 import AdminHome from './admin/AdminHome.vue'
 import AdminBracket from './admin/AdminBracket.vue'
 import AdminRoles from './admin/AdminRoles.vue'
@@ -26,8 +26,8 @@ import { mapState } from 'vuex'
 
 Vue.use(VueRouter)
 Vue.use(Vuetify)
-//Vue.component('discord-profile', DiscordProfile)
-//Vue.component('osu-profile', OsuProfile)
+Vue.component('discord-profile', DiscordProfile)
+Vue.component('osu-profile', OsuProfile)
 Vue.use(VueAxios, axios)
 Vue.use(Vuex)
 
