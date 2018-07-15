@@ -2,51 +2,51 @@
 .wrapper
 	.list-wrapper
 		h2 Tiers
-		md-table(v-model="tiers" md-card @md-selected="selectTier")
-			md-table-row(slot="md-table-row" slot-scope="{ item }" md-selectable="single" md-auto-select)
-				md-table-cell(md-label="Name" md-sort-by="name") {{ item.name }}
-		md-button.md-raised.new-button(@click="newTier") Add
-	.edit-wrapper(v-if="editVisible")
+		v-data-table.elevation-1(:items="tiers" item-key="_id")
+			template(slot="headers" slot-scope="props")
+				tr
+					th(align="left") Name
+					th(align="left") Seeding
+					th(align="right") Actions
+			template(slot="items" slot-scope="props")
+				tr
+					td.text-xs-left {{ props.item.name }}
+					td.text-xs-left {{ props.item.seedingMode }}
+					td.text-xs-right
+						v-icon.mr-2(small @click="editTier(props.item)" :disabled="editVisible") edit
+						v-icon(small @click="showDeleteDialog(props.item)" :disabled="editVisible") delete
+		v-btn(@click="createTier" color="success") New tier
+	v-form.edit-wrapper(v-if="editVisible" v-model="editValid")
 		h2 {{ editHeader }}
-		md-field(:class="nameClass")
-			label Name
-			md-input(v-model="tier.name" required)
-			span.md-error Name is required
+		v-text-field(label="Name" v-model="tier.name" :rules="[rules.required]")
 		.horizontal
-			md-field.flex(:class="lowerEndClass")
-				label Lower endpoint
-				md-input(v-model="tier.lowerEnd" type="number" required)
-				span.md-error Must be greater than 0
+			v-text-field(label="Lower endpoint" v-model="tier.lowerEnd" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
 			.endpoint-divider -
-			md-field.flex(:class="upperEndClass")
-				label Upper endpoint
-				md-input(v-model="tier.upperEnd" type="number" required)
-				span.md-error {{ upperEndError }}
-		md-field(:class="startingRoundClass")
-			label Starting round
-			md-select(v-model="tier.startingRound" required)
-				md-option(v-for="round in choosableRounds()" v-bind:value="round._id" v-bind:key="round._id") {{ round.name }}
-			span.md-error Must select a round
-		md-field(:class="seedingClass")
-			label Seeding
-			md-select(v-model="tier.seedingMode" required)
-				md-option(value="time") Registration time
-				md-option(value="rank") Rank
-				md-option(value="random") Random
-			span.md-error Must select seeding mode
+			v-text-field(label="Upper endpoint" v-model="tier.upperEnd" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+		v-select(label="Starting round" v-model="tier.startingRound" :items="choosableRounds()" item-text="name" item-value="_id" :rules="[rules.required]")
+		v-select(label="Seeding mode" v-model="tier.seedingMode" :items="seedingModes" :rules="[rules.required]")
 		.horizontal
-			md-button.md-raised.save-button(@click="saveTier") Save
-			md-button.md-raised.md-accent.delete-button(@click="deleteTier" v-if="tier._id") Delete
-	md-dialog-alert(:md-active.sync="errorVisible" md-title="Invalid input" md-content="Please check your inputs!")
+			v-btn(@click="cancel") Cancel
+			v-btn(@click="saveTier" color="success" :disabled="!editValid") Save
+	v-dialog(v-model="deleteDialogVisible" max-width="300")
+		v-card
+			v-card-title.headline Delete this tier?
+			v-card-text This action is not reversible!
+			v-card-actions
+				v-spacer
+				v-btn(flat @click="deleteDialogVisible = false") Cancel
+				v-btn(flat @click="deleteTier" color="error") Delete
 </template>
 
 <script>
 export default {
 	name: 'AdminTiers',
 	data: () => ({
-		editHeader: '',
+		newTier: false,
 		editVisible: false,
-		errorVisible: false,
+		editValid: false,
+		deleteDialogVisible: false,
+		deleteTierId: '',
 		tier: {
 			_id: '',
 			name: '',
@@ -54,38 +54,25 @@ export default {
 			upperEnd: 0,
 			startingRound: '',
 			seedingMode: ''
+		},
+		seedingModes: [ 'time', 'rank', 'random' ],
+		rules: {
+			required: value => !!value || 'Required',
+			greaterZero: value => value > 0 || 'Must be greater than 0',
+			integer: value => Number.isInteger(Number(value)) || 'Must be an integer'
 		}
 	}),
 	computed: {
 		tiers() {
 			return this.$store.state.tiers
 		},
-		nameClass() {
-			return { 'md-invalid': !this.tier.name }
-		},
-		lowerEndClass() {
-			return { 'md-invalid': this.tier.lowerEnd < 1 }
-		},
-		upperEndClass() {
-			return { 'md-invalid': this.tier.upperEnd < 1 || this.tier.upperEnd <= this.tier.lowerEnd }
-		},
-		upperEndError() {
-			if (this.tier.upperEnd <= this.tier.lowerEnd)
-				return 'Must be greater than lower endpoint'
-			if (this.tier.lowerEnd < 1)
-				return 'Must be greater than 0'
-			return ''
-		},
-		startingRoundClass() {
-			return { 'md-invalid': !this.tier.startingRound }
-		},
-		seedingClass() {
-			return { 'md-invalid': !this.tier.seedingMode }
+		editHeader() {
+			return this.newTier ? 'New tier' : 'Edit tier'
 		}
 	},
 	methods: {
-		newTier() {
-			this.editHeader = 'New tier'
+		createTier() {
+			this.newTier = true
 			this.tier = {
 				_id: '',
 				name: '',
@@ -96,14 +83,14 @@ export default {
 			}
 			this.editVisible = true
 		},
-		selectTier(tier) {
+		editTier(tier) {
+			this.newTier = false
 			this.tier = tier
-			this.editHeader = 'Edit tier'
 			this.editVisible = true
 		},
 		saveTier() {
-			if (this.validate()) {
-				if (this.tier._id) {
+			if (this.editValid) {
+				if (!this.newTier) {
 					this.axios.put('/api/tiers/' + this.tier._id, {
 						tier: this.tier
 					})
@@ -126,14 +113,16 @@ export default {
 						console.log(err)
 					})
 				}
-			} else {
-				this.errorVisible = true
 			}
 		},
+		showDeleteDialog(tier) {
+			this.deleteTierId = tier._id
+			this.deleteDialogVisible = true
+		},
 		deleteTier() {
-			this.axios.delete('/api/tiers/' + this.tier._id)
+			this.deleteDialogVisible = false
+			this.axios.delete('/api/tiers/' + this.deleteTierId)
 			.then((result) => {
-				this.editVisible = false
 				this.$store.dispatch('getTiers')
 			})
 			.catch((err) => {
@@ -145,13 +134,8 @@ export default {
 				return round.startRound
 			})
 		},
-		validate() {
-			if (!this.tier.name) return false
-			if (this.tier.lowerEnd < 1) return false
-			if (this.tier.upperEnd < 1) return false
-			if (!this.tier.startingRound) return false
-			if (!this.tier.seedingMode) return false
-			return true
+		cancel() {
+			this.editVisible = false
 		}
 	}
 }
@@ -171,6 +155,7 @@ export default {
 	display flex
 	flex-direction column
 	width 500px
+	margin-left 20px
 .horizontal
 	display flex
 	flex-direction row
