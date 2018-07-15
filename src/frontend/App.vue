@@ -27,8 +27,6 @@ v-app
 					v-list-tile-title Bracket
 				v-list-tile(to="/admin/lobbies" v-if="hasPermission('admin.lobbies')")
 					v-list-tile-title Lobbies
-				v-list-tile(to="/admin/mappoolers" v-if="hasPermission('admin.mappoolers')")
-					v-list-tile-title Mappoolers
 				v-list-tile(to="/admin/players" v-if="hasPermission('admin.players')")
 					v-list-tile-title Players
 				v-list-tile(to="/admin/registrations" v-if="hasPermission('admin.registrations')")
