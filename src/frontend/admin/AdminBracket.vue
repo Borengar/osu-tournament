@@ -171,7 +171,6 @@ export default {
 			this.deleteDialogVisible = false
 			this.axios.delete('/api/rounds/' + this.deleteRoundId)
 			.then((result) => {
-				this.editVisible = false
 				this.$store.dispatch('getRounds')
 			})
 			.catch((err) => {
