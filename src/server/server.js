@@ -11,6 +11,7 @@ var bodyParser = require('body-parser')
 const cheerio = require('cheerio')
 const fs = require('fs')
 const DiscordJS = require('discord.js')
+const OsuApi = require('./osuApi.js')
 
 const config = require('./config.json')
 
@@ -46,19 +47,32 @@ MongoClient.connect(config.mongodb.host, {
 		next()
 	})
 
-	const discord = new DiscordJS.Client()
-	discord.login(config.discord.botToken)
-	.then((botToken) => {
-		console.log('Discord connected')
-		fs.readdir('./routes', (err, files) => {
-			for (let i = 0; i < files.length; i++) {
-				require('./routes/' + files[i])(app, db, axios, config, ObjectId, discord)
-			}
+	const osu = new OsuApi({
+		apiKey: config.osu.apiKey,
+		username: config.osu.username,
+		password: config.osu.password
+	})
+	osu.connect()
+	.then(() => {
+		console.log('OsuApi connected')
 
-			app.listen(80, () => {
-				console.log('osu-tournament is listening on port 80!')
+		const discord = new DiscordJS.Client()
+		discord.login(config.discord.botToken)
+		.then((botToken) => {
+			console.log('Discord connected')
+			fs.readdir('./routes', (err, files) => {
+				for (let i = 0; i < files.length; i++) {
+					require('./routes/' + files[i])(app, db, axios, config, ObjectId, discord, osu)
+				}
+
+				app.listen(80, () => {
+					console.log('osu-tournament is listening on port 80!')
+				})
 			})
 		})
+	})
+	.catch((err) => {
+		console.log(err)
 	})
 })
 .catch((err) => {

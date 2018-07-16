@@ -1,22 +1,20 @@
-module.exports = function(app, db, axios, config, ObjectId) {
+module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 
 	app.get('/api/osuprofile/:userId', (req, res, next) => {
-		axios.get('https://osu.ppy.sh/users/' + req.params.userId)
-		.then((response) => {
-			let $ = cheerio.load(response.data)
-			let userData = JSON.parse($('#json-user').html())
-			res.json({
-				id: userData.id,
-				username: userData.username,
-				avatarUrl: userData.avatar_url,
-				hitAccuracy: userData.statistics.hit_accuracy,
-				level: userData.statistics.level.current,
-				playCount: userData.statistics.play_count,
-				pp: userData.statistics.pp,
-				rank: userData.statistics.rank.global,
-				playstyle: userData.playstyle.join(' + '),
-				country: userData.country.code
-			})
+		osu.getUserId(req.params.userId)
+		.then((userId) => {
+			return osu.getUserProfile(userId)
+		})
+		.then((profile) => {
+			res.json(profile)
+		})
+		.catch(next)
+	})
+
+	app.get('/api/osubeatmap/:beatmapId', (req, res, next) => {
+		osu.getBeatmap(req.params.beatmapId)
+		.then((beatmap) => {
+			res.json(beatmap)
 		})
 		.catch(next)
 	})
