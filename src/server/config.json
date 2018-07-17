@@ -10,5 +10,10 @@
 	},
 	"mongodb": {
 		"host": ""
+	},
+	"osu": {
+		"apiKey": "",
+		"username": "",
+		"password": ""
 	}
 }
