@@ -9,8 +9,9 @@
 	div(v-if="!registerHidden")
 		.horizontal.search-wrapper
 			v-text-field(label="Name" v-model="osuUsername" @keyup.enter="search")
-			v-btn(@click="search") Search
+			v-btn(@click="search" color="success") Search
 		osu-profile(:profile="registrationProfile")
+		v-btn.register-button(v-if="registrationProfile.id" @click="register" color="success") Register
 	div(v-if="registerHidden")
 		osu-profile(:profile="osuProfile")
 		h2 Your availability
@@ -120,4 +121,8 @@ export default {
 	margin-top 20px
 .search-wrapper
 	width 400px
+.register-button
+	width 400px !important
+	margin-left 0
+	margin-top 20px
 </style>
