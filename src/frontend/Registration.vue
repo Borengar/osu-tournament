@@ -7,8 +7,8 @@
 	div If your registration is accepted you will be automatically assigned the appropriate Discord role on our server.
 	h2 Your osu! account
 	div(v-if="!registerHidden")
-		.horizontal
-			v-text-field(label="Name" v-model="osuUsername")
+		.horizontal.search-wrapper
+			v-text-field(label="Name" v-model="osuUsername" @keyup.enter="search")
 			v-btn(@click="search") Search
 		osu-profile(:profile="registrationProfile")
 	div(v-if="registerHidden")
@@ -118,4 +118,6 @@ export default {
 .availability-table
 	width 500px
 	margin-top 20px
+.search-wrapper
+	width 400px
 </style>
