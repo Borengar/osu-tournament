@@ -19,4 +19,20 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		.catch(next)
 	})
 
+	app.get('/api/osubeatmapset/:beatmapsetId', (req, res, next) => {
+		osu.getBeatmapset(req.params.beatmapsetId)
+		.then((beatmapset) => {
+			res.json(beatmapset)
+		})
+		.catch(next)
+	})
+
+	app.get('/api/osubeatmapsetsearch/:query', (req, res, next) => {
+		osu.searchBeatmapset(req.params.query)
+		.then((beatmapsets) => {
+			res.json(beatmapsets)
+		})
+		.catch(next)
+	})
+
 }

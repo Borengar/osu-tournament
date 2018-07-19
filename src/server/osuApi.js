@@ -82,6 +82,24 @@ class OsuApi {
 			return result.data
 		})
 	}
+
+	getBeatmapset(beatmapsetId) {
+		return axios.get(`https://osu.ppy.sh/api/v2/beatmapsets/${beatmapsetId}`, {
+			headers: { 'Authorization': `Bearer ${this.accessToken}` }
+		})
+		.then((result) => {
+			return result.data
+		})
+	}
+
+	searchBeatmapset(query) {
+		return axios.get(`https://osu.ppy.sh/api/v2/beatmapsets/search/?q=${query}`, {
+			headers: { 'Authorization': `Bearer ${this.accessToken}` }
+		})
+		.then((result) => {
+			return result.data
+		})
+	}
 }
 
 module.exports = OsuApi
