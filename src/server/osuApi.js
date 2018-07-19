@@ -59,7 +59,18 @@ class OsuApi {
 			headers: { 'Authorization': `Bearer ${this.accessToken}` }
 		})
 		.then((result) => {
-			return result.data
+			return {
+				id: result.data.id,
+				username: result.data.username,
+				avatarUrl: result.data.avatar_url,
+				hitAccuracy: result.data.statistics.hit_accuracy.toFixed(2),
+				level: result.data.statistics.level.current,
+				playCount: result.data.statistics.play_count,
+				pp: result.data.statistics.pp,
+				rank: result.data.statistics.pp_rank,
+				playstyle: result.data.statistics.playstyle,
+				country: result.data.country.code
+			}
 		})
 	}
 
