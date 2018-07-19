@@ -68,7 +68,7 @@ class OsuApi {
 				playCount: result.data.statistics.play_count,
 				pp: result.data.statistics.pp,
 				rank: result.data.statistics.pp_rank,
-				playstyle: result.data.statistics.playstyle,
+				playstyle: result.data.playstyle,
 				country: result.data.country.code
 			}
 		})
