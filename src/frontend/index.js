@@ -51,7 +51,7 @@ const store = new Vuex.Store({
 	state: {
 		user: {
 			discord: { username: null, discriminator: null, id: null, avatar: null },
-			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, bestScore: null, playstyle: null, country: null },
+			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, playstyle: null, country: null },
 			registration: { time: null, active: false },
 			availability: [],
 			permissions: []
