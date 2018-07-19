@@ -1,39 +1,25 @@
-module.exports = function(app, db, axios, config, ObjectId) {
+module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 
 	app.post('/api/registrations', (req, res, next) => {
-		axios.get('https://osu.ppy.sh/users/' + req.body.osuId)
-		.then((response) => {
-			let $ = cheerio.load(response.data)
-			let userData = JSON.parse($('#json-user').html())
-			let osuProfile = {
-				id: userData.id,
-				username: userData.username,
-				avatarUrl: userData.avatar_url,
-				hitAccuracy: userData.statistics.hit_accuracy,
-				level: userData.statistics.level.current,
-				playCount: userData.statistics.play_count,
-				pp: userData.statistics.pp,
-				rank: userData.statistics.rank.global,
-				playstyle: userData.playstyle.join(' + '),
-				country: userData.country.code
-			}
+		osu.getUserProfile(req.body.osuId)
+		.then((profile) => {
 			let collection = db.collection('users')
-			collection.findOneAndUpdate({
+			return collection.findOneAndUpdate({
 				'session': req.session.id
 			}, {
 				$set: {
-					'osu': osuProfile,
+					'osu': profile,
 					'registration': {
 						'time': new Date().toISOString(),
 						'active': true
 					}
 				}
 			})
-			.then((result) => {
-				res.json({ message: 'Registration successfull' })
-			})
-			.catch(next)
 		})
+		.then((result) => {
+			res.json({ message: 'Registration successfull' })
+		})
+		.catch(next)
 	})
 
 	app.delete('/api/registrations', (req,res) => {
