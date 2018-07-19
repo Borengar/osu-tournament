@@ -1,11 +1,12 @@
 <template lang="pug">
 .wrapper
+	.empty(v-if="!profile.username") ?
 	.avatar(v-bind:style="{ 'background-image': 'url(' + profile.avatarUrl + ')' }")
-	.username {{ profile.username }}
-	.pp Performance: {{ profile.pp }}pp
-	.acc Accuracy: {{ profile.hitAccuracy }}%
-	.playcount Play Count: {{ profile.playCount }} (LV{{ profile.level }})
-	.rank \#{{ profile.rank }}
+	.username(v-if="profile.username") {{ profile.username }}
+	.pp(v-if="profile.pp") Performance: {{ profile.pp }}pp
+	.acc(v-if="profile.hitAccuracy") Accuracy: {{ profile.hitAccuracy }}%
+	.playcount(v-if="profile.playCount") Play Count: {{ profile.playCount }} (LV{{ profile.level }})
+	.rank(v-if="profile.rank") \#{{ profile.rank }}
 </template>
 
 <script>
@@ -48,7 +49,11 @@ export default {
 .rank
 	position absolute
 	right 5px
-	bottom 10px
+	bottom 0px
 	font-size 40px
 	opacity 0.5
+.empty
+	position absolute
+	left 185px
+	font-size 70px
 </style>
