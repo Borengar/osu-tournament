@@ -2,9 +2,10 @@ module.exports = function(app, db, axios, config, ObjectId) {
 
 	app.get('/api/settings', (req, res, next) => {
 		let collection = db.collection('settings')
-		collection.findOne({})
+		collection.findOne({}, {
+			projection: { '_id': 0 }
+		})
 		.then((settings) => {
-			delete settings._id
 			res.json(settings)
 		})
 		.catch(next)

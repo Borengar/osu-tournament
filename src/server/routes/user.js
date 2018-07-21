@@ -4,16 +4,12 @@ module.exports = function(app, db, axios, config, ObjectId) {
 		let collection = db.collection('users')
 		collection.findOne({
 			'session': req.session.id
+		}, {
+			projection: { '_id': 0, 'session': 0 }
 		})
 		.then((result) => {
 			result.permissions.registration = true
-			res.json({
-				discord: result.discord,
-				osu: result.osu,
-				registration: result.registration,
-				permissions: result.permissions,
-				availability: result.availability
-			})
+			res.json(result)
 		})
 		.catch(next)
 	})
