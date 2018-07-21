@@ -4,21 +4,21 @@ module.exports = function(app, db, axios, config, ObjectId) {
 		let collection = db.collection('settings')
 		collection.findOne({})
 		.then((settings) => {
+			delete settings._id
 			res.json(settings)
 		})
 		.catch(next)
 	})
 
-	app.put('/api/settings/roles', (req, res, next) => {
+	app.put('/api/settings/registration', (req, res, next) => {
 		let collection = db.collection('settings')
-		let roles = req.body.roles
 		collection.findOneAndUpdate({}, {
 			$set: {
-				roles: roles
+				registration: req.body.registration
 			}
 		})
-		.then(() => {
-			res.json({ message: 'Roles saved' })
+		.then((result) => {
+			res.json({ message: 'Settings updated' })
 		})
 		.catch(next)
 	})

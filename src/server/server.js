@@ -84,7 +84,7 @@ function initDb(db) {
 	collection.find({}).toArray()
 	.then((result) => {
 		if (result.length == 0) {
-			collection.insertOne({
+			return collection.insertOne({
 				name: 'superuser',
 				discordRole: '',
 				permissions: {
@@ -107,10 +107,33 @@ function initDb(db) {
 					}
 				}
 			})
-			.catch((err) => {
-				console.log(err)
+		}
+	})
+	.then((result) => {
+		console.log('Roles initialized')
+	})
+	.catch((err) => {
+		console.log(err)
+	})
+
+	let settingsCollection = db.collection('settings')
+	settingsCollection.find({}).toArray()
+	.then((result) => {
+		if (result.length == 0) {
+			return settingsCollection.insertOne({
+				registration: {
+					active: false,
+					openDate: null,
+					openTime: null,
+					closeDate: null,
+					closeTime: null
+				}
 			})
 		}
+		return Promise.resolve()
+	})
+	.then((result) => {
+		console.log('Settings initialized')
 	})
 	.catch((err) => {
 		console.log(err)

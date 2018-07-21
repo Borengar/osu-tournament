@@ -14,6 +14,7 @@ import DiscordProfile from './misc/DiscordProfile.vue'
 import OsuProfile from './misc/OsuProfile.vue'
 import AdminHome from './admin/AdminHome.vue'
 import AdminBracket from './admin/AdminBracket.vue'
+import AdminRegistrations from './admin/AdminRegistrations.vue'
 import AdminRoles from './admin/AdminRoles.vue'
 import AdminTiers from './admin/AdminTiers.vue'
 import AdminTimeslots from './admin/AdminTimeslots.vue'
@@ -41,6 +42,7 @@ const router = new VueRouter({
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
 		{ path: '/admin/bracket', component: AdminBracket, name: 'Admin Bracket' },
+		{ path: '/admin/registrations', component: AdminRegistrations, name: 'Admin Registrations' },
 		{ path: '/admin/roles', component: AdminRoles, name: 'Admin Roles' },
 		{ path: '/admin/tiers', component: AdminTiers, name: 'Admin Tiers' },
 		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Admin Timeslots' }
@@ -61,7 +63,13 @@ const store = new Vuex.Store({
 		tiers: [],
 		discordroles: [],
 		settings: {
-			
+			registration: {
+				active: false,
+				openDate: null,
+				openTime: null,
+				closeDate: null,
+				closeTime: null
+			}
 		},
 		roles: []
 	},
