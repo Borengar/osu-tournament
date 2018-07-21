@@ -28,7 +28,17 @@
 						v-checkbox(v-model="props.selected" primary hide-details)
 					td.text-xs-left {{ props.item.day }}
 					td.text-xs-left {{ props.item.time }}
-		v-btn(@click="saveAvailability" color="success") Save
+		.vertical
+			v-btn.register-button(@click="saveAvailability" color="success") Save
+			v-btn.register-button(@click="showDeleteDialog" color="error") Delete registration
+	v-dialog(v-model="deleteDialogVisible" max-width="300")
+		v-card
+			v-card-title.headline Delete registration?
+			v-card-text You can register again as long as the registration period is not over.
+			v-card-actions
+				v-spacer
+				v-btn(flat @click="deleteDialogVisible = false") Cancel
+				v-btn(flat @click="deleteRegistration" color="error") Delete
 </template>
 
 <script>
@@ -38,7 +48,8 @@ export default {
 		return {
 			osuUsername: '',
 			registrationProfile: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, playstyle: null, country: null },
-			availability: []
+			availability: [],
+			deleteDialogVisible: false
 		}
 	},
 	computed: {
@@ -94,6 +105,19 @@ export default {
 				this.availability = []
 			else
 				this.availability = this.timeslots.slice()
+		},
+		showDeleteDialog() {
+			this.deleteDialogVisible = true
+		},
+		deleteRegistration() {
+			this.deleteDialogVisible = false
+			this.axios.delete('/api/registrations')
+			.then((response) => {
+				this.$store.dispatch('updateUser')
+			})
+			.catch((err) => {
+				console.log(err)
+			})
 		}
 	}
 }
@@ -117,7 +141,7 @@ export default {
 	background-color #2e3136 !important
 	color white !important
 .availability-table
-	width 500px
+	width 400px
 	margin-top 20px
 .search-wrapper
 	width 400px

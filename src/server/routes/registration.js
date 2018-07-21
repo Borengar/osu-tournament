@@ -22,13 +22,16 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		.catch(next)
 	})
 
-	app.delete('/api/registrations', (req,res) => {
+	app.delete('/api/registrations', (req, res, next) => {
 		let collection = db.collection('users')
 		collection.findOneAndUpdate({
 			'session': req.session.id
 		}, {
 			$set: {
-				'registration.active': false
+				'registration': {
+					'active': false,
+					'time': null
+				}
 			}
 		})
 		.then((result) => {
