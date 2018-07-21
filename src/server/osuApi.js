@@ -34,6 +34,7 @@ class OsuApi {
 			this.accessToken = result.data.access_token
 			this.refreshToken = result.data.refresh_token
 			setTimeout(this.refreshApiToken, (result.data.expires_in - 3600) * 1000)
+			console.log('osu! API token refreshed')
 		})
 		.catch((err) => {
 			console.log(err)

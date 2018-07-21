@@ -54,19 +54,19 @@ MongoClient.connect(config.mongodb.host, {
 	})
 	osu.connect()
 	.then(() => {
-		console.log('OsuApi connected')
+		console.log('osu! API connected')
 
 		const discord = new DiscordJS.Client()
 		discord.login(config.discord.botToken)
 		.then((botToken) => {
-			console.log('Discord connected')
+			console.log('Discord API connected')
 			fs.readdir('./routes', (err, files) => {
 				for (let i = 0; i < files.length; i++) {
 					require('./routes/' + files[i])(app, db, axios, config, ObjectId, discord, osu)
 				}
 
 				app.listen(80, () => {
-					console.log('osu-tournament is listening on port 80!')
+					console.log('webserver is running')
 				})
 			})
 		})
