@@ -1,7 +1,7 @@
 <template lang="pug">
 .wrapper.horizontal
 	.avatar(:style='avatarUrl')
-	.username {{ profile.username }}
+	.username {{ profile.username }}\#{{ profile.discriminator }}
 </template>
 
 <script>
