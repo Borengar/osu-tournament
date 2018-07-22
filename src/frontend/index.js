@@ -71,7 +71,9 @@ const store = new Vuex.Store({
 				closeTime: null
 			}
 		},
-		roles: []
+		roles: [],
+		registrations: [],
+		discordmembers: []
 	},
 	mutations: {
 		updateUser(state, payload) {
@@ -100,6 +102,12 @@ const store = new Vuex.Store({
 		},
 		updateRoles(state, payload) {
 			state.roles = payload.roles
+		},
+		updateRegistrations(state, payload) {
+			state.registrations = payload.registrations
+		},
+		updateDiscordMembers(state, payload) {
+			state.discordmembers = payload.members
 		}
 	},
 	actions: {
@@ -111,6 +119,7 @@ const store = new Vuex.Store({
 			this.dispatch('getDiscordRoles')
 			this.dispatch('getSettings')
 			this.dispatch('getRoles')
+			this.dispatch('getRegistrations')
 		},
 		updateUser({ commit }) {
 			axios.get('/api/user')
@@ -158,6 +167,18 @@ const store = new Vuex.Store({
 			axios.get('/api/roles')
 			.then((response) => {
 				commit('updateRoles', { roles: response.data })
+			})
+		},
+		getRegistrations({ commit }) {
+			axios.get('/api/registrations')
+			.then((response) => {
+				commit('updateRegistrations', { registrations: response.data })
+			})
+		},
+		getDiscordMembers({ commit }) {
+			axios.get('/api/discord/members')
+			.then((response) => {
+				commit('updateDiscordMembers', { members: response.data })
 			})
 		}
 	}

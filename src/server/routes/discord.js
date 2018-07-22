@@ -119,4 +119,19 @@ module.exports = function(app, db, axios, config, ObjectId, discord) {
 		.catch(next)
 	})
 
+	app.get('/api/discord/members', (req, res, next) => {
+		let guild = discord.guilds.first()
+		let membersData = guild.members.array()
+		let members = []
+		for (let i = 0; i < membersData.length; i++) {
+			members.push({
+				id: membersData[i].user.id,
+				username: membersData[i].user.username,
+				discriminator: membersData[i].user.discriminator,
+				avatar: membersData[i].user.avatar
+			})
+		}
+		res.json(members)
+	})
+
 }
