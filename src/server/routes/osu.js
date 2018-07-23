@@ -16,7 +16,9 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		.then((beatmap) => {
 			res.json(beatmap)
 		})
-		.catch(next)
+		.catch((err) => {
+			res.json(null)
+		})
 	})
 
 	app.get('/api/osubeatmapset/:beatmapsetId', (req, res, next) => {
@@ -24,7 +26,9 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		.then((beatmapset) => {
 			res.json(beatmapset)
 		})
-		.catch(next)
+		.catch((err) => {
+			res.json(null)
+		})
 	})
 
 	app.get('/api/osubeatmapsetsearch/:query', (req, res, next) => {
@@ -32,7 +36,9 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		.then((beatmapsets) => {
 			res.json(beatmapsets)
 		})
-		.catch(next)
+		.catch((err) => {
+			res.json(null)
+		})
 	})
 
 }
