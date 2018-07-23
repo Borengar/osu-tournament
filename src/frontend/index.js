@@ -20,6 +20,7 @@ import AdminRoles from './admin/AdminRoles.vue'
 import AdminTiers from './admin/AdminTiers.vue'
 import AdminTimeslots from './admin/AdminTimeslots.vue'
 import HeadpoolerHome from './headpooler/HeadpoolerHome.vue'
+import HeadpoolerMappools from './headpooler/HeadpoolerMappools.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -51,6 +52,7 @@ const router = new VueRouter({
 		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Admin Timeslots' },
 		{ path: '/headpooler', redirect: '/headpooler/home' },
 		{ path: '/headpooler/home', component: HeadpoolerHome, name: 'Headpooler Home' },
+		{ path: '/headpooler/mappools', component: HeadpoolerMappools, name: 'Headpooler Mappools' }
 	]
 })
 

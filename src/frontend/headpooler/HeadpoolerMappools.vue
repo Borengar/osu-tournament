@@ -1,0 +1,180 @@
+<template lang="pug">
+.wrapper
+	.horizontal
+		v-select.mappool-select(label="Round" v-model="selectedRound"  :items="rounds" item-text="name" item-value="_id")
+		v-select.mappool-select(label="Tier" v-model="selectedTier"  :items="tiers" item-text="name" item-value="_id")
+	.mappool-wrapper
+		.list-wrapper(v-if="mappool._id")
+			v-data-table.elevation-1(:items="mappool.slots" item-key="beatmap.id" hide-actions)
+				template(slot="headers" slot-scope="props")
+					tr
+						th(align="left") Mods
+						th(align="left") Beatmap
+						th(align="right") Actions
+				template(slot="items" slot-scope="props")
+					tr
+						td.text-xs-left {{ props.item.mods.join('') }}
+						td.text-xs-left {{ props.item.beatmap.title }}
+						td.text-xs-right
+							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="editVisible") up
+							v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="editVisible") down
+							v-icon.mr-2(small @click="editSlot(props.item)"  :disabled="editVisible") edit
+							v-icon(small @click="deleteSlot(props.item)"  :disabled="editVisible") delete
+			.horizontal
+				v-btn(@click="addSlot" color="success") Add beatmap
+				v-btn(@click="addMultipleSlots" color="success") Bulk add
+				v-btn(@click="saveMappool" color="success") Save
+		.add-wrapper(v-if="editVisible")
+			h2 Add beatmap
+			.horizontal
+				v-text-field(label="Beatmap ID" v-model="beatmapQuery" @keyup.enter="searchBeatmap")
+				v-btn(@click="searchBeatmap" color="success") Search
+			beatmap-big(:beatmap="beatmap"  :mods="mods" v-if="beatmap")
+		.bulk-wrapper(v-if="bulkAddVisible")
+</template>
+
+<script>
+export default {
+	name: 'HeadpoolerMappools',
+	data: () => ({
+		selectedRound: null,
+		selectedTier: null,
+		editVisible: false,
+		bulkAddVisible: false,
+		beatmapQuery: null,
+		mappool: {
+			_id: null,
+			round: null,
+			tier: null,
+			slots: [],
+			feedback: []
+		},
+		slot: {
+			beatmap: Object,
+			mods: []
+		},
+		beatmap: null,
+		mods: [],
+		beatmapsets: []
+	}),
+	computed: {
+		tiers() {
+			return this.$store.state.tiers
+		},
+		rounds() {
+			return this.$store.state.rounds
+		}
+	},
+	methods: {
+		getMappool() {
+			if (this.selectedRound && this.selectedTier) {
+				this.axios.get('/api/rounds/' + this.selectedRound + '/tiers/' + this.selectedTier + '/mappool')
+				.then((result) => {
+					this.mappool = result.data
+				})
+				.catch((err) => {
+					console.log(err)
+					this.mappool = {
+						id: null,
+						round: null,
+						tier: null,
+						slots: [],
+						feedback: []
+					}
+				})
+			}
+		},
+		addSlot() {
+			this.slot = {
+				beatmap: null,
+				mods: []
+			}
+			this.newSlot = true
+			this.bulkAddVisible = false
+			this.editVisible = true
+		},
+		addMultipleSlots() {
+			this.editVisible = false
+			this.bulkAddVisible = true
+		},
+		editSlot(slot) {
+			this.slot = slot
+			this.newSlot = false
+			this.bulkAddVisible = false
+			this.editVisible = true
+		},
+		saveMappool() {
+			this.axios.put('/api/rounds/' + this.selectedRound + '/tiers/' + this.selectedTier + '/mappool', {
+				slots: mappool.slots
+			})
+			.then((result) => {
+
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		},
+		searchBeatmap() {
+			this.axios.get('/api/osubeatmap/' + this.beatmapQuery)
+			.then((result) => {
+				if (result.data)
+					this.beatmap = result.data
+				else {
+					this.axios.get('/api/osubeatmapset/' + this.beatmapQuery)
+					.then((result) => {
+						if (result.data)
+							this.beatmapsets = [result.data]
+						else {
+							this.axios.get('/api/osubeatmapsetsearch/' + this.beatmapQuery)
+							.then((result) => {
+								this.beatmapsets = result.data
+							})
+							.catch((err) => {
+								console.log(err)
+							})
+						}
+					})
+					.catch((err) => {
+						console.log(err)
+					})
+				}
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		}
+	},
+	watch: {
+		selectedTier(oldTier, newTier) {
+			this.getMappool()
+		},
+		selectedRound(oldRound, newRound) {
+			this.getMappool()
+		}
+	}
+}
+</script>
+
+<style lang="stylus" scoped>
+.wrapper
+	display flex
+	flex-direction column
+.horizontal
+	display flex
+	flex-direction row
+.mappool-select
+	max-width 250px
+	margin-right 20px
+.mappool-wrapper
+	display flex
+	flex-direction row
+.list-wrapper
+	display flex
+	flex-direction column
+	width 500px
+.add-wrapper
+	display flex
+	flex-direction column
+	margin-left 20px
+	width 1000px
+</style>
