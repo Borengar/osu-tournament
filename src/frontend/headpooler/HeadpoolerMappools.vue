@@ -14,22 +14,32 @@
 				template(slot="items" slot-scope="props")
 					tr
 						td.text-xs-left {{ props.item.mods.join('') }}
-						td.text-xs-left {{ props.item.beatmap.title }}
+						td.text-xs-left {{ props.item.beatmap.beatmapset.title }}
 						td.text-xs-right
-							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="editVisible") up
-							v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="editVisible") down
-							v-icon.mr-2(small @click="editSlot(props.item)"  :disabled="editVisible") edit
-							v-icon(small @click="deleteSlot(props.item)"  :disabled="editVisible") delete
+							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") up
+							v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") down
+							v-icon.mr-2(small @click="editSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") edit
+							v-icon(small @click="deleteSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") delete
 			.horizontal
 				v-btn(@click="addSlot" color="success") Add beatmap
 				v-btn(@click="addMultipleSlots" color="success") Bulk add
 				v-btn(@click="saveMappool" color="success") Save
-		.add-wrapper(v-if="editVisible")
+		.add-wrapper(v-if="addVisible")
 			h2 Add beatmap
 			.horizontal
 				v-text-field(label="Beatmap ID" v-model="beatmapQuery" @keyup.enter="searchBeatmap")
 				v-btn(@click="searchBeatmap" color="success") Search
-			beatmap-big(:beatmap="beatmap"  :mods="mods" v-if="beatmap")
+			div(v-if="beatmap")
+				beatmap-big(:beatmap="beatmap"  :mods="modsSorted")
+				.horizontal
+					v-checkbox(v-model="mods" label="HD" value="HD")
+					v-checkbox(v-model="mods" label="HR" value="HR")
+					v-checkbox(v-model="mods" label="DT" value="DT")
+					v-checkbox(v-model="mods" label="Freemod" value="Freemod")
+					v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
+			.horizontal
+				v-btn(@click="cancelAdd") Cancel
+				v-btn(@click="addBeatmap" v-if="beatmap") Add
 		.bulk-wrapper(v-if="bulkAddVisible")
 </template>
 
@@ -39,8 +49,9 @@ export default {
 	data: () => ({
 		selectedRound: null,
 		selectedTier: null,
-		editVisible: false,
+		addVisible: false,
 		bulkAddVisible: false,
+		editVisible: false,
 		beatmapQuery: null,
 		mappool: {
 			_id: null,
@@ -63,6 +74,21 @@ export default {
 		},
 		rounds() {
 			return this.$store.state.rounds
+		},
+		modsSorted() {
+			let mods = this.mods.slice()
+			mods.sort(function(a, b) {
+				if (a == 'HD')
+					return -1
+				if (a == 'DT')
+					return 1
+				if (b == 'HD')
+					return 1
+				if (b == 'DT')
+					return -1
+				return 0
+			})
+			return mods
 		}
 	},
 	methods: {
@@ -89,17 +115,16 @@ export default {
 				beatmap: null,
 				mods: []
 			}
-			this.newSlot = true
+			this.addVisible = true
 			this.bulkAddVisible = false
-			this.editVisible = true
 		},
 		addMultipleSlots() {
-			this.editVisible = false
+			this.addVisible = false
 			this.bulkAddVisible = true
 		},
 		editSlot(slot) {
 			this.slot = slot
-			this.newSlot = false
+			this.addVisible = false
 			this.bulkAddVisible = false
 			this.editVisible = true
 		},
@@ -142,6 +167,29 @@ export default {
 			.catch((err) => {
 				console.log(err)
 			})
+		},
+		removeMods(mods, modsToRemove) {
+			let modsChanged = false
+			let modsCopy = mods.slice()
+			for (let i = 0; i < modsToRemove.length; i++) {
+				let index = modsCopy.indexOf(modsToRemove[i])
+				if (index > -1) {
+					modsCopy.splice(index, 1)
+					modsChanged = true
+				}
+			}
+			if (modsChanged)
+				this.mods = modsCopy
+		},
+		cancelAdd() {
+			this.addVisible = false
+		},
+		addBeatmap() {
+			this.mappool.slots.push({
+				beatmap: this.beatmap,
+				mods: this.mods
+			})
+			this.addVisible = false
 		}
 	},
 	watch: {
@@ -150,6 +198,23 @@ export default {
 		},
 		selectedRound(oldRound, newRound) {
 			this.getMappool()
+		},
+		mods(newMods, oldMods) {
+			if (newMods.length) {
+				switch (newMods[newMods.length - 1]) {
+					case 'HD':
+					case 'HR':
+					case 'DT':
+						this.removeMods(newMods, [ 'Freemod', 'Tiebreaker' ])
+						break
+					case 'Freemod':
+						this.removeMods(newMods, [ 'HD', 'HR', 'DT', 'Tiebreaker' ])
+						break
+					case 'Tiebreaker':
+						this.removeMods(newMods, [ 'HD', 'HR', 'DT', 'Freemod' ])
+						break
+				}
+			}
 		}
 	}
 }
