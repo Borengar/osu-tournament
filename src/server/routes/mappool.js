@@ -32,4 +32,20 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		})
 	})
 
+	app.put('/api/rounds/:roundId/tiers/:tierId/mappool', (req, res, next) => {
+		let collection = db.collection('mappools')
+		collection.findOneAndUpdate({
+			'round': ObjectId(req.params.roundId),
+			'tier': ObjectId(req.params.tierId)
+		}, {
+			$set: {
+				'slots': req.body.slots
+			}
+		})
+		.then((result) => {
+			res.json({ message: 'Mappool updated' })
+		})
+		.catch(next)
+	})
+
 }
