@@ -13,7 +13,7 @@
 						th(align="right") Actions
 				template(slot="items" slot-scope="props")
 					tr
-						td.text-xs-left {{ props.item.mods.join('') }}
+						td.text-xs-left {{ sortMods(props.item.mods).join('') }}
 						td.text-xs-left {{ props.item.beatmap.beatmapset.title }}
 						td.text-xs-right.horizontal
 							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_up
@@ -30,7 +30,7 @@
 				v-text-field(label="Beatmap ID" v-model="beatmapQuery" @keyup.enter="searchBeatmap")
 				v-btn(@click="searchBeatmap" color="success") Search
 			div(v-if="beatmap")
-				beatmap-big(:beatmap="beatmap"  :mods="modsSorted")
+				beatmap-big(:beatmap="beatmap"  :mods="sortMods(mods)")
 				.horizontal
 					v-checkbox(v-model="mods" label="HD" value="HD")
 					v-checkbox(v-model="mods" label="HR" value="HR")
@@ -81,21 +81,6 @@ export default {
 		},
 		rounds() {
 			return this.$store.state.rounds
-		},
-		modsSorted() {
-			let mods = this.mods.slice()
-			mods.sort(function(a, b) {
-				if (a == 'HD')
-					return -1
-				if (a == 'DT')
-					return 1
-				if (b == 'HD')
-					return 1
-				if (b == 'DT')
-					return -1
-				return 0
-			})
-			return mods
 		}
 	},
 	methods: {
@@ -238,6 +223,20 @@ export default {
 				this.mappool.slots.splice(index, 1)
 				this.mappool.slots.splice(index + 1, 0, slot)
 			}
+		sortMods(mods) {
+			var modsCopy = mods.slice()
+			modsCopy.sort(function(a, b) {
+				if (a == 'HD')
+					return -1
+				if (a == 'DT')
+					return 1
+				if (b == 'HD')
+					return 1
+				if (b == 'DT')
+					return -1
+				return 0
+			})
+			return modsCopy
 		}
 	},
 	watch: {
