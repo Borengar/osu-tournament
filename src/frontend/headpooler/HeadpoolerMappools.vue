@@ -38,7 +38,7 @@
 					v-checkbox(v-model="mods" label="Freemod" value="Freemod")
 					v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
 			.horizontal
-				v-btn(@click="cancelAdd") Cancel
+				v-btn(@click="cancel") Cancel
 				v-btn(@click="addBeatmap" v-if="beatmap") Add
 		.bulk-wrapper(v-if="bulkAddVisible")
 </template>
@@ -181,8 +181,10 @@ export default {
 			if (modsChanged)
 				this.mods = modsCopy
 		},
-		cancelAdd() {
+		cancel() {
 			this.addVisible = false
+			this.bulkAddVisible = false
+			this.editVisible = false
 		},
 		addBeatmap() {
 			this.mappool.slots.push({
