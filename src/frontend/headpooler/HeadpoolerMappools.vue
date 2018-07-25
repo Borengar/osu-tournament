@@ -47,6 +47,17 @@
 				v-btn(@click="cancel") Cancel
 				v-btn(@click="startBulkAdd" color="success") Start
 		.edit-wrapper(v-if="editVisible")
+			h2 Edit beatmap
+			beatmap-big(:beatmap="beatmap"  :mods="sortMods(mods)")
+			.horizontal
+				v-checkbox(v-model="mods" label="HD" value="HD")
+				v-checkbox(v-model="mods" label="HR" value="HR")
+				v-checkbox(v-model="mods" label="DT" value="DT")
+				v-checkbox(v-model="mods" label="Freemod" value="Freemod")
+				v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
+			.horizontal
+				v-btn(@click="cancel") Cancel
+				v-btn(@click="saveBeatmap" v-if="beatmap") Save
 </template>
 
 <script>
@@ -66,10 +77,6 @@ export default {
 			tier: null,
 			slots: [],
 			feedback: []
-		},
-		slot: {
-			beatmap: Object,
-			mods: []
 		},
 		beatmap: null,
 		mods: [],
@@ -115,7 +122,8 @@ export default {
 			this.bulkAddVisible = true
 		},
 		editSlot(slot) {
-			this.slot = slot
+			this.beatmap = slot.beatmap
+			this.mods = slot.mods.slice()
 			this.addVisible = false
 			this.bulkAddVisible = false
 			this.editVisible = true
@@ -223,6 +231,14 @@ export default {
 				this.mappool.slots.splice(index, 1)
 				this.mappool.slots.splice(index + 1, 0, slot)
 			}
+		},
+		saveBeatmap() {
+			let slot = this.mappool.slots.find((mappoolSlot) => {
+				return mappoolSlot.beatmap == this.beatmap
+			})
+			slot.mods = this.mods
+			this.cancel()
+		},
 		sortMods(mods) {
 			var modsCopy = mods.slice()
 			modsCopy.sort(function(a, b) {
