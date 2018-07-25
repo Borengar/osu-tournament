@@ -225,6 +225,19 @@ export default {
 				this.cancel()
 			}
 		},
+		moveUp(slot) {
+			let index = this.mappool.slots.indexOf(slot)
+			if (index > 0) {
+				this.mappool.slots.splice(index, 1)
+				this.mappool.slots.splice(index - 1, 0, slot)
+			}
+		},
+		moveDown(slot) {
+			let index = this.mappool.slots.indexOf(slot)
+			if (index < this.mappool.slots.length - 1) {
+				this.mappool.slots.splice(index, 1)
+				this.mappool.slots.splice(index + 1, 0, slot)
+			}
 		}
 	},
 	watch: {
