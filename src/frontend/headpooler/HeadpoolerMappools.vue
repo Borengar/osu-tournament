@@ -15,9 +15,9 @@
 					tr
 						td.text-xs-left {{ props.item.mods.join('') }}
 						td.text-xs-left {{ props.item.beatmap.beatmapset.title }}
-						td.text-xs-right
-							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") up
-							v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") down
+						td.text-xs-right.horizontal
+							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_up
+							v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_down
 							v-icon.mr-2(small @click="editSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") edit
 							v-icon(small @click="deleteSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") delete
 			.horizontal
