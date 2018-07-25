@@ -195,9 +195,9 @@ export default {
 		},
 		startBulkAdd() {
 			this.bulkQueue = this.beatmapQuery.split('\n')
-			this.bulkWorker()
+			this.bulkWorker(0)
 		},
-		bulkWorker() {
+		bulkWorker(counter) {
 			if (this.bulkQueue.length > 0) {
 				var beatmapId = this.bulkQueue.shift()
 				this.axios.get('/api/osubeatmap/' + beatmapId)
@@ -205,14 +205,14 @@ export default {
 					if (result.data) {
 						this.mappool.slots.push({
 							beatmap: result.data,
-							mods: []
+							mods: mods
 						})
 					}
-					this.bulkWorker()
+					this.bulkWorker(counter + 1)
 				})
 				.catch((err) => {
 					console.log(err)
-					this.bulkWorker()
+					this.bulkWorker(counter + 1)
 				})
 			} else {
 				this.cancel()
