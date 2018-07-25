@@ -203,6 +203,12 @@ export default {
 				this.axios.get('/api/osubeatmap/' + beatmapId)
 				.then((result) => {
 					if (result.data) {
+						var mods = []
+						if (counter >= 6 && counter <= 7) mods = [ 'HD' ]
+						if (counter >= 8 && counter <= 9) mods = [ 'HR' ]
+						if (counter >= 10 && counter <= 11) mods = [ 'DT' ]
+						if (counter >= 12 && counter <= 14) mods = [ 'Freemod' ]
+						if (counter == 15) mods = [ 'Tiebreaker' ]
 						this.mappool.slots.push({
 							beatmap: result.data,
 							mods: mods
