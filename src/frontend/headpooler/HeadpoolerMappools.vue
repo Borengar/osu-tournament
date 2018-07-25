@@ -130,7 +130,7 @@ export default {
 		},
 		saveMappool() {
 			this.axios.put('/api/rounds/' + this.selectedRound + '/tiers/' + this.selectedTier + '/mappool', {
-				slots: mappool.slots
+				slots: this.mappool.slots
 			})
 			.then((result) => {
 
