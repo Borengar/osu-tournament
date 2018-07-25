@@ -41,6 +41,12 @@
 				v-btn(@click="cancel") Cancel
 				v-btn(@click="addBeatmap" v-if="beatmap") Add
 		.bulk-wrapper(v-if="bulkAddVisible")
+			h2 Add multiple beatmaps
+			v-textarea(label="Beatmaps" v-model="beatmapQuery")
+			.horizontal
+				v-btn(@click="cancel") Cancel
+				v-btn(@click="startBulkAdd" color="success") Start
+		.edit-wrapper(v-if="editVisible")
 </template>
 
 <script>
@@ -53,6 +59,7 @@ export default {
 		bulkAddVisible: false,
 		editVisible: false,
 		beatmapQuery: null,
+		bulkQueue: [],
 		mappool: {
 			_id: null,
 			round: null,
@@ -111,12 +118,12 @@ export default {
 			}
 		},
 		addSlot() {
-			this.slot = {
-				beatmap: null,
-				mods: []
-			}
+			this.beatmapQuery = null
+			this.beatmap = null
+			this.mods = []
 			this.addVisible = true
 			this.bulkAddVisible = false
+			this.editVisible = false
 		},
 		addMultipleSlots() {
 			this.addVisible = false
@@ -192,6 +199,32 @@ export default {
 				mods: this.mods
 			})
 			this.addVisible = false
+		},
+		startBulkAdd() {
+			this.bulkQueue = this.beatmapQuery.split('\n')
+			this.bulkWorker()
+		},
+		bulkWorker() {
+			if (this.bulkQueue.length > 0) {
+				var beatmapId = this.bulkQueue.shift()
+				this.axios.get('/api/osubeatmap/' + beatmapId)
+				.then((result) => {
+					if (result.data) {
+						this.mappool.slots.push({
+							beatmap: result.data,
+							mods: []
+						})
+					}
+					this.bulkWorker()
+				})
+				.catch((err) => {
+					console.log(err)
+					this.bulkWorker()
+				})
+			} else {
+				this.cancel()
+			}
+		},
 		}
 	},
 	watch: {
@@ -244,4 +277,9 @@ export default {
 	flex-direction column
 	margin-left 20px
 	width 1000px
+.bulk-wrapper
+	display flex
+	flex-direction column
+	margin-left 20px
+	width 300px
 </style>
