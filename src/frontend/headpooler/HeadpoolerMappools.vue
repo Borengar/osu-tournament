@@ -37,9 +37,14 @@
 					v-checkbox(v-model="mods" label="DT" value="DT")
 					v-checkbox(v-model="mods" label="Freemod" value="Freemod")
 					v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
+			div(v-if="beatmapset")
+				h3 This is a set id! Please choose the correct difficulty.
+				v-radio-group(v-model="difficulty")
+					v-radio(v-for="beatmap in beatmapset.beatmaps"  :key="beatmap.id"  :value="beatmap.id"  :label="`${beatmap.version} (${beatmap.difficulty_rating.toPrecision(2)}* CS${beatmap.cs} HP${beatmap.drain} OD${beatmap.accuracy} AR${beatmap.ar})`")
 			.horizontal
 				v-btn(@click="cancel") Cancel
-				v-btn(@click="addBeatmap" v-if="beatmap") Add
+				v-btn(@click="addBeatmap" v-if="beatmap" color="success") Add
+				v-btn(@click="chooseDifficulty" v-if="difficulty" color="success") Choose
 		.bulk-wrapper(v-if="bulkAddVisible")
 			h2 Add multiple beatmaps
 			v-textarea(label="Beatmaps" v-model="beatmapQuery")
@@ -80,7 +85,9 @@ export default {
 		},
 		beatmap: null,
 		mods: [],
-		beatmapsets: []
+		beatmapset: null,
+		beatmapsets: [],
+		difficulty: null
 	}),
 	computed: {
 		tiers() {
@@ -112,6 +119,9 @@ export default {
 		addSlot() {
 			this.beatmapQuery = null
 			this.beatmap = null
+			this.beatmapset = null
+			this.difficulty = null
+			this.beatmapsets = []
 			this.mods = []
 			this.addVisible = true
 			this.bulkAddVisible = false
@@ -147,8 +157,10 @@ export default {
 				else {
 					this.axios.get('/api/osubeatmapset/' + this.beatmapQuery)
 					.then((result) => {
-						if (result.data)
-							this.beatmapsets = [result.data]
+						if (result.data) {
+							result.data.beatmaps.sort((a, b) => { return a.difficulty_rating - b.difficulty_rating })
+							this.beatmapset = result.data
+						}
 						else {
 							this.axios.get('/api/osubeatmapsetsearch/' + this.beatmapQuery)
 							.then((result) => {
@@ -192,6 +204,18 @@ export default {
 				mods: this.mods
 			})
 			this.addVisible = false
+		},
+		chooseDifficulty() {
+			this.beatmapQuery = this.difficulty
+			this.axios.get('/api/osubeatmap/' + this.difficulty)
+			.then((result) => {
+				this.beatmap = result.data
+				this.beatmapset = null
+				this.difficulty = null
+			})
+			.catch((err) => {
+				console.log(err)
+			})
 		},
 		startBulkAdd() {
 			this.bulkQueue = this.beatmapQuery.split('\n')
