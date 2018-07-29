@@ -14,7 +14,7 @@ module.exports = function(app, db, axios, config, ObjectId, discord) {
 				player: false,
 				referee: false,
 				mappooler: false,
-				mappools: [],
+				mappoolerTiers: [],
 				headpooler: false,
 				admin: {
 					availability: false,
@@ -37,7 +37,7 @@ module.exports = function(app, db, axios, config, ObjectId, discord) {
 						permissions.player = permissions.player || rolePermissions.player
 						permissions.referee = permissions.referee || rolePermissions.referee
 						permissions.mappooler = permissions.mappooler || rolePermissions.mappooler
-						permissions.mappools.push.apply(permissions.mappools, rolePermissions.mappools)
+						permissions.mappoolerTiers = permissions.mappoolerTiers.concat(rolePermissions.mappoolerTiers)
 						permissions.headpooler = permissions.headpooler || rolePermissions.headpooler
 						permissions.admin.availability = permissions.admin.availability || rolePermissions.admin.availability
 						permissions.admin.bracket = permissions.admin.bracket || rolePermissions.admin.bracket
@@ -52,7 +52,7 @@ module.exports = function(app, db, axios, config, ObjectId, discord) {
 					}
 				}
 
-				permissions.mappools = [...new Set(permissions.mappools)]
+				permissions.mappoolerTiers = [...new Set(permissions.mappoolerTiers)]
 
 				collection.findOneAndUpdate({
 					'discord.id': response.data.id
