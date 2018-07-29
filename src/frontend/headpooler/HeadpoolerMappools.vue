@@ -286,9 +286,11 @@ export default {
 			}
 		},
 		beatmapQuery(newQuery, oldQuery) {
-			newQuery = newQuery.replace(/https:\/\/osu\.ppy\.sh\/b\//, '')
-			newQuery = newQuery.replace(/https:\/\/osu\.ppy\.sh\/beatmapsets\/[^#]+osu\//, '')
-			this.beatmapQuery = newQuery
+			if (newQuery) {
+				newQuery = newQuery.replace(/https:\/\/osu\.ppy\.sh\/b\//, '')
+				newQuery = newQuery.replace(/https:\/\/osu\.ppy\.sh\/beatmapsets\/[^#]+osu\//, '')
+				this.beatmapQuery = newQuery
+			}
 		}
 	}
 }
