@@ -21,12 +21,16 @@ import AdminTiers from './admin/AdminTiers.vue'
 import AdminTimeslots from './admin/AdminTimeslots.vue'
 import HeadpoolerHome from './headpooler/HeadpoolerHome.vue'
 import HeadpoolerMappools from './headpooler/HeadpoolerMappools.vue'
+import HeadpoolerFeedback from './headpooler/HeadpoolerFeedback.vue'
 
 // Other stuff
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Vuex from 'vuex'
 import { mapState } from 'vuex'
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
 
 Vue.use(VueRouter)
 Vue.use(Vuetify)
@@ -35,6 +39,7 @@ Vue.component('osu-profile', OsuProfile)
 Vue.component('beatmap-big', BeatmapBig)
 Vue.use(VueAxios, axios)
 Vue.use(Vuex)
+Vue.use(VueQuillEditor)
 
 const router = new VueRouter({
 	mode: 'history',
@@ -52,7 +57,8 @@ const router = new VueRouter({
 		{ path: '/admin/timeslots', component: AdminTimeslots, name: 'Admin Timeslots' },
 		{ path: '/headpooler', redirect: '/headpooler/home' },
 		{ path: '/headpooler/home', component: HeadpoolerHome, name: 'Headpooler Home' },
-		{ path: '/headpooler/mappools', component: HeadpoolerMappools, name: 'Headpooler Mappools' }
+		{ path: '/headpooler/mappools', component: HeadpoolerMappools, name: 'Headpooler Mappools' },
+		{ path: '/headpooler/feedback', component: HeadpoolerFeedback, name: 'Headpooler Feedback'}
 	]
 })
 
