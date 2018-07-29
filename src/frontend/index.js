@@ -6,22 +6,35 @@ import VueRouter from 'vue-router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 
-// Components
+// Source pages
 import App from './App.vue'
 import Home from './Home.vue'
+
+// Registration page
 import Registration from './Registration.vue'
-import DiscordProfile from './misc/DiscordProfile.vue'
-import OsuProfile from './misc/OsuProfile.vue'
-import BeatmapBig from './misc/BeatmapBig.vue'
+
+// Admin pages
 import AdminHome from './admin/AdminHome.vue'
 import AdminBracket from './admin/AdminBracket.vue'
 import AdminRegistrations from './admin/AdminRegistrations.vue'
 import AdminRoles from './admin/AdminRoles.vue'
 import AdminTiers from './admin/AdminTiers.vue'
 import AdminTimeslots from './admin/AdminTimeslots.vue'
+
+// Headpooler pages
 import HeadpoolerHome from './headpooler/HeadpoolerHome.vue'
 import HeadpoolerMappools from './headpooler/HeadpoolerMappools.vue'
 import HeadpoolerFeedback from './headpooler/HeadpoolerFeedback.vue'
+
+// Mappooler pages
+import MappoolerHome from './mappooler/MappoolerHome.vue'
+import MappoolerMappools from './mappooler/MappoolerMappools.vue'
+import MappoolerFeedback from './mappooler/MappoolerFeedback.vue'
+
+// Custom components
+import DiscordProfile from './misc/DiscordProfile.vue'
+import OsuProfile from './misc/OsuProfile.vue'
+import BeatmapBig from './misc/BeatmapBig.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -58,7 +71,11 @@ const router = new VueRouter({
 		{ path: '/headpooler', redirect: '/headpooler/home' },
 		{ path: '/headpooler/home', component: HeadpoolerHome, name: 'Headpooler Home' },
 		{ path: '/headpooler/mappools', component: HeadpoolerMappools, name: 'Headpooler Mappools' },
-		{ path: '/headpooler/feedback', component: HeadpoolerFeedback, name: 'Headpooler Feedback'}
+		{ path: '/headpooler/feedback', component: HeadpoolerFeedback, name: 'Headpooler Feedback'},
+		{ path: '/mappooler', redirect: '/mappooler/home' },
+		{ path: '/mappooler/home', component: MappoolerHome, name: 'Mappooler Home' },
+		{ path: '/mappooler/mappools', component: MappoolerMappools, name: 'Mappooler Mappools' },
+		{ path: '/mappooler/feedback', component: MappoolerFeedback, name: 'Mappooler Feedback'}
 	]
 })
 
@@ -69,7 +86,14 @@ const store = new Vuex.Store({
 			osu: { id: null, username: null, avatarUrl: null, hitAccuracy: null, level: null, playCount: null, pp: null, rank: null, playstyle: null, country: null },
 			registration: { time: null, active: false },
 			availability: [],
-			permissions: []
+			permissions: {
+				player: false,
+				referee: false,
+				mappooler: false,
+				mappoolerTiers: [],
+				headpooler: true,
+				admin: { availability: false, bracket: false, lobbies: false, mappoolers: false, players: false, registrations: false, roles: false, spreadsheets: false, tiers: false, timeslots: false }
+			}
 		},
 		timeslots: [],
 		rounds: [],
