@@ -138,6 +138,10 @@ export default {
 			this.bulkAddVisible = false
 			this.editVisible = true
 		},
+		deleteSlot(slot) {
+			let index = this.mappool.slots.indexOf(slot)
+			this.mappool.slots.splice(index, 1)
+		},
 		saveMappool() {
 			this.axios.put('/api/rounds/' + this.selectedRound + '/tiers/' + this.selectedTier + '/mappool', {
 				slots: this.mappool.slots
