@@ -38,13 +38,18 @@
 					v-checkbox(v-model="mods" label="Freemod" value="Freemod")
 					v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
 			div(v-if="beatmapset")
-				h3 This is a set id! Please choose the correct difficulty.
+				h3 Please choose a difficulty.
 				v-radio-group(v-model="difficulty")
 					v-radio(v-for="beatmap in beatmapset.beatmaps"  :key="beatmap.id"  :value="beatmap.id"  :label="`${beatmap.version} (${beatmap.difficulty_rating.toPrecision(2)}* CS${beatmap.cs} HP${beatmap.drain} OD${beatmap.accuracy} AR${beatmap.ar})`")
+			div(v-if="beatmapsets.length")
+				h3 Search result
+				v-radio-group(v-model="chosenSet")
+					v-radio(v-for="set in beatmapsets"  :key="set.id"  :value="set"  :label="`${set.artist} - ${set.title} (by ${set.creator})`")
 			.horizontal
 				v-btn(@click="cancel") Cancel
 				v-btn(@click="addBeatmap" v-if="beatmap" color="success") Add
 				v-btn(@click="chooseDifficulty" v-if="difficulty" color="success") Choose
+				v-btn(@click="chooseSet" v-if="chosenSet" color="success") Choose
 		.bulk-wrapper(v-if="bulkAddVisible")
 			h2 Add multiple beatmaps
 			v-textarea(label="Beatmaps" v-model="beatmapQuery")
@@ -87,7 +92,8 @@ export default {
 		mods: [],
 		beatmapset: null,
 		beatmapsets: [],
-		difficulty: null
+		difficulty: null,
+		chosenSet: null
 	}),
 	computed: {
 		tiers() {
@@ -220,6 +226,12 @@ export default {
 			.catch((err) => {
 				console.log(err)
 			})
+		},
+		chooseSet() {
+			this.beatmapset = this.chosenSet
+			this.beatmapQuery = this.beatmapset.id.toString()
+			this.chosenSet = null
+			this.beatmapsets.splice(0, this.beatmapsets.length)
 		},
 		startBulkAdd() {
 			this.bulkQueue = this.beatmapQuery.split('\n')
