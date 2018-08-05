@@ -48,6 +48,9 @@
 			osu-profile(:profile="registration.osu")
 			v-btn(@click="showDeleteRegistration" color="error") Delete registration
 			v-btn(@click="cancel") Cancel
+	.transform-wrapper
+		h2 Accept registrations
+		v-btn(@click="createPlayers" color="success"  :disabled="createPlayersDisabled") Registrations -> Players
 	v-dialog(v-model="changeDiscordAccountDialogVisible" max-width="400")
 		v-card
 			v-card-title.headline Change discord account
@@ -95,6 +98,9 @@ export default {
 		},
 		discordMembers() {
 			return this.$store.state.discordmembers.map(member => { return { id: member.id, name: member.username + '#' + member.discriminator, avatar: member.avatar } })
+		},
+		createPlayersDisabled() {
+			return this.$store.state.players.length > 0
 		}
 	},
 	methods: {
@@ -149,6 +155,15 @@ export default {
 		},
 		cancel() {
 			this.editVisible = false
+		},
+		createPlayers() {
+			this.axios.post('/api/players')
+			.then((result) => {
+				this.$store.dispatch('getPlayers')
+			})
+			.catch((err) => {
+				console.log(err)
+			})
 		}
 	}
 }
@@ -166,12 +181,18 @@ export default {
 .registrations-wrapper
 	display flex
 	flex-direction row
+	margin-top 20px
 .list-wrapper
 	width 500px
 .edit-wrapper
 	display flex
 	flex-direction column
 	margin-left 20px
+.transform-wrapper
+	display flex
+	flex-direction column
+	width 500px
+	margin-top 20px
 .dialog-autocomplete
 	margin-left 10px
 	margin-right 10px
