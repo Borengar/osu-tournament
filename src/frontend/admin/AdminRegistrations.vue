@@ -47,6 +47,7 @@
 			h3 osu
 			osu-profile(:profile="registration.osu")
 			v-btn(@click="showDeleteRegistration" color="error") Delete registration
+			v-btn(@click="cancel") Cancel
 	v-dialog(v-model="changeDiscordAccountDialogVisible" max-width="400")
 		v-card
 			v-card-title.headline Change discord account
@@ -145,6 +146,9 @@ export default {
 			.catch((err) => {
 				console.log(err)
 			})
+		},
+		cancel() {
+			this.editVisible = false
 		}
 	}
 }
@@ -165,6 +169,8 @@ export default {
 .list-wrapper
 	width 500px
 .edit-wrapper
+	display flex
+	flex-direction column
 	margin-left 20px
 .dialog-autocomplete
 	margin-left 10px
