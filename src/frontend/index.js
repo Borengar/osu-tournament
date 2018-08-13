@@ -16,6 +16,7 @@ import Registration from './Registration.vue'
 // Admin pages
 import AdminHome from './admin/AdminHome.vue'
 import AdminBracket from './admin/AdminBracket.vue'
+import AdminLobbies from './admin/AdminLobbies.vue'
 import AdminPlayers from './admin/AdminPlayers.vue'
 import AdminRegistrations from './admin/AdminRegistrations.vue'
 import AdminRoles from './admin/AdminRoles.vue'
@@ -65,6 +66,7 @@ const router = new VueRouter({
 		{ path: '/admin', redirect: '/admin/home' },
 		{ path: '/admin/home', component: AdminHome, name: 'Admin Home' },
 		{ path: '/admin/bracket', component: AdminBracket, name: 'Admin Bracket' },
+		{ path: '/admin/lobbies', component: AdminLobbies, name: 'Admin Lobbies' },
 		{ path: '/admin/players', component: AdminPlayers, name: 'Admin Players' },
 		{ path: '/admin/registrations', component: AdminRegistrations, name: 'Admin Registrations' },
 		{ path: '/admin/roles', component: AdminRoles, name: 'Admin Roles' },
