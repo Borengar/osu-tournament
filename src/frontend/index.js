@@ -37,6 +37,7 @@ import MappoolerFeedback from './mappooler/MappoolerFeedback.vue'
 import DiscordProfile from './misc/DiscordProfile.vue'
 import OsuProfile from './misc/OsuProfile.vue'
 import BeatmapBig from './misc/BeatmapBig.vue'
+import LobbyItem from './misc/LobbyItem.vue'
 
 // Other stuff
 import axios from 'axios'
@@ -52,6 +53,7 @@ Vue.use(Vuetify)
 Vue.component('discord-profile', DiscordProfile)
 Vue.component('osu-profile', OsuProfile)
 Vue.component('beatmap-big', BeatmapBig)
+Vue.component('lobby-item', LobbyItem)
 Vue.use(VueAxios, axios)
 Vue.use(Vuex)
 Vue.use(VueQuillEditor)

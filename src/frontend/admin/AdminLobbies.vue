@@ -8,6 +8,7 @@
 		v-btn.action(@click="saveLobbies" v-if="lobbiesExist" color="success") Save lobbies
 		v-btn.action(@click="deleteLobbies" v-if="lobbiesExist" color="error") Delete lobbies
 	.lobbies-wrapper
+		lobby-item.lobby-item(v-for="lobby in lobbies"  :lobby="lobby")
 </template>
 
 <script>
@@ -100,4 +101,10 @@ export default {
 	flex-direction row
 .action
 	max-width 300px
+.lobbies-wrapper
+	display flex
+	flex-direction row
+	flex-wrap wrap
+.lobby-item
+	margin 10px
 </style>

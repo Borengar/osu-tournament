@@ -25,7 +25,9 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 				let lobby = {
 					round: ObjectId(req.params.roundId),
 					tier: ObjectId(req.params.tierId),
-					slots: []
+					slots: [],
+					date: null,
+					time: null
 				}
 				for (let j = 0; j < round.lobbySize; j++) {
 					lobby.slots.push({
@@ -52,7 +54,9 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 				'_id': ObjectId(lobbies[i]._id)
 			}, {
 				$set: {
-					'slots': lobbies[i].slots
+					'slots': lobbies[i].slots,
+					'date': lobbies[i].date,
+					'time': lobbies[i].time
 				}
 			}))
 		}
