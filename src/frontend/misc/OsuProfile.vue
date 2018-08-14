@@ -20,7 +20,8 @@ export default {
 
 <style lang="stylus" scoped>
 .wrapper
-	width 400px
+	max-width 400px
+	min-width 400px
 	height 100px
 	background-color #090909
 	color white

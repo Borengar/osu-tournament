@@ -8,6 +8,10 @@ v-card.wrapper
 		v-menu.time-picker(ref="menu2"  :close-on-content-click="false"  v-model="menu2"  :return-value.sync="lobby.time" lazy transition="scale-transition" offset-y full-width)
 			v-text-field(slot="activator" v-model="lobby.time" label="Time" prepend-icon="access_time" readonly)
 			v-time-picker(v-model="lobby.time" format="24hr" @input="$refs.menu2.save(lobby.time)")
+	.slot-wrapper(v-for="slot in lobby.slots")
+		osu-profile(v-if="slot.player"  :profile="slot.player.osu")
+		.empty-slot(v-if="!slot.player" v-on:dragover="dragover" v-on:drop="drop(slot, $event)")
+			.empty-text EMPTY
 </template>
 
 <script>
@@ -19,6 +23,16 @@ export default {
 	}),
 	props: {
 		lobby: Object
+	},
+	methods: {
+		dragover(event) {
+			event.preventDefault()
+			event.dataTransfer.dropEffect = 'move'
+		},
+		drop(slot, event) {
+			event.preventDefault()
+			slot.player = JSON.parse(event.dataTransfer.getData('player'))
+		}
 	}
 }
 </script>
@@ -37,4 +51,15 @@ export default {
 .time-picker
 	width 200px
 	margin-left 20px
+.slot-wrapper
+	margin 10px auto
+.empty-slot
+	display flex
+	width 400px
+	height 100px
+	background-color #090909
+	color white
+.empty-text
+	margin auto
+	font-size 50px
 </style>

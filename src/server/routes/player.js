@@ -11,6 +11,18 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		.catch(next)
 	})
 
+	app.get('/api/rounds/:roundId/tiers/:tierId/players', (req, res, next) => {
+		let collection = db.collection('users')
+		collection.find({
+			'player.tier._id': ObjectId(req.params.tierId),
+			'player.nextRound._id': ObjectId(req.params.roundId)
+		}).toArray()
+		.then((players) => {
+			res.json(players)
+		})
+		.catch(next)
+	})
+
 	app.post('/api/players', (req, res, next) => {
 		let tierCollection = db.collection('tiers')
 		let roundCollection = db.collection('rounds')
@@ -47,7 +59,9 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 					}, {
 						$set: {
 							player: {
-								tier: tier
+								tier: tier,
+								currentLobby: null,
+								nextRound: round
 							}
 						}
 					}))
