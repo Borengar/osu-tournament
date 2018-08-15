@@ -10,8 +10,8 @@
 	.horizontal
 		.lobbies-wrapper
 			lobby-item.lobby-item(v-for="lobby in lobbies"  :lobby="lobby")
-		.players-wrapper
-			.player-wrapper(v-for="player in freePlayers" draggable v-on:dragstart="dragFromPlayers(player, $event)")
+		.players-wrapper(v-on:dragover="dragover" v-on:drop="drop")
+			.player-wrapper(v-for="player in freePlayers" draggable v-on:dragstart="dragstart(player, $event)")
 				osu-profile(:profile="player.osu")
 </template>
 
@@ -22,8 +22,7 @@ export default {
 		filterRound: null,
 		filterTier: null,
 		lobbies: [],
-		players: [],
-		draggedFromPlayers: true
+		players: []
 	}),
 	computed: {
 		rounds() {
@@ -103,12 +102,28 @@ export default {
 				console.log(err)
 			})
 		},
-		dragFromPlayers(player, event) {
-			this.draggedFromPlayers = true
+		dragover(event) {
+			event.preventDefault()
+			event.dataTransfer.dropEffect = 'move'
+		},
+		drop(event) {
+			event.preventDefault()
+			let player = JSON.parse(event.dataTransfer.getData('player'))
+			for (let i = 0; i < this.lobbies.length; i++) {
+				for (let j = 0; j < this.lobbies[i].slots.length; j++) {
+					if (this.lobbies[i].slots[j].player && this.lobbies[i].slots[j].player._id == player._id) {
+						this.lobbies[i].slots[j].player = null
+						return
+					}
+				}
+			}
+		},
+		dragstart(player, event) {
 			let img = new Image(20, 20)
 			img.src = player.osu.avatarUrl
 			event.dataTransfer.setDragImage(img, 10, 10)
 			event.dataTransfer.setData('player', JSON.stringify(player))
+			event.dataTransfer.setData('dragFromLobby', false)
 		}
 	},
 	watch: {
@@ -152,4 +167,6 @@ export default {
 	display flex
 	flex-direction column
 	min-width 450px
+.player-wrapper
+	margin 10px
 </style>

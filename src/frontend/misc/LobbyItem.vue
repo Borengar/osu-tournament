@@ -9,7 +9,8 @@ v-card.wrapper
 			v-text-field(slot="activator" v-model="lobby.time" label="Time" prepend-icon="access_time" readonly)
 			v-time-picker(v-model="lobby.time" format="24hr" @input="$refs.menu2.save(lobby.time)")
 	.slot-wrapper(v-for="slot in lobby.slots")
-		osu-profile(v-if="slot.player"  :profile="slot.player.osu")
+		.osu-profile-wrapper(draggable v-on:dragstart="dragstart(slot.player, $event)")
+			osu-profile(v-if="slot.player"  :profile="slot.player.osu")
 		.empty-slot(v-if="!slot.player" v-on:dragover="dragover" v-on:drop="drop(slot, $event)")
 			.empty-text EMPTY
 </template>
@@ -32,6 +33,12 @@ export default {
 		drop(slot, event) {
 			event.preventDefault()
 			slot.player = JSON.parse(event.dataTransfer.getData('player'))
+		},
+		dragstart(player, event) {
+			let img = new Image(20, 20)
+			img.src = player.osu.avatarUrl
+			event.dataTransfer.setDragImage(img, 10, 10)
+			event.dataTransfer.setData('player', JSON.stringify(player))
 		}
 	}
 }
