@@ -1,12 +1,12 @@
 <template lang="pug">
 .wrapper
-	.empty(v-if="!profile.username") ?
-	.avatar(v-bind:style="{ 'background-image': 'url(' + profile.avatarUrl + ')' }")
-	.username(v-if="profile.username") {{ profile.username }}
-	.pp(v-if="profile.pp") Performance: {{ profile.pp }}pp
-	.acc(v-if="profile.hitAccuracy") Accuracy: {{ profile.hitAccuracy }}%
-	.playcount(v-if="profile.playCount") Play Count: {{ profile.playCount }} (LV{{ profile.level }})
-	.rank(v-if="profile.rank") \#{{ profile.rank }}
+	.empty(v-if="!profile") ?
+	.avatar(v-if="profile" v-bind:style="{ 'background-image': 'url(' + profile.avatarUrl + ')' }")
+	.username(v-if="profile") {{ profile.username }}
+	.pp(v-if="profile") Performance: {{ profile.pp }}pp
+	.acc(v-if="profile") Accuracy: {{ profile.hitAccuracy }}%
+	.playcount(v-if="profile") Play Count: {{ profile.playCount }} (LV{{ profile.level }})
+	.rank(v-if="profile") \#{{ profile.rank }}
 </template>
 
 <script>
@@ -14,6 +14,14 @@ export default {
 	name: 'OsuProfile',
 	props: {
 		profile: Object
+	},
+	computed: {
+		isEmpty() {
+			if (this.profile && this.profile.username) {
+				return false
+			}
+			return true
+		}
 	}
 }
 </script>

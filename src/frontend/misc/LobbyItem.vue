@@ -8,38 +8,25 @@ v-card.wrapper
 		v-menu.time-picker(ref="menu2"  :close-on-content-click="false"  v-model="menu2"  :return-value.sync="lobby.time" lazy transition="scale-transition" offset-y full-width)
 			v-text-field(slot="activator" v-model="lobby.time" label="Time" prepend-icon="access_time" readonly)
 			v-time-picker(v-model="lobby.time" format="24hr" @input="$refs.menu2.save(lobby.time)")
-	.slot-wrapper(v-for="slot in lobby.slots")
-		.osu-profile-wrapper(draggable v-on:dragstart="dragstart(slot.player, $event)")
-			osu-profile(v-if="slot.player"  :profile="slot.player.osu")
-		.empty-slot(v-if="!slot.player" v-on:dragover="dragover" v-on:drop="drop(slot, $event)")
-			.empty-text EMPTY
+	draggable.players-wrapper(v-model="lobby.players"  :options="{group:'players'}" @start="drag=true" @end="drag=false")
+		.player-wrapper(v-for="player in lobby.players")
+			osu-profile(v-if="player"  :profile="player.osu")
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
 	name: 'LobbyItem',
+	components: {
+		draggable
+	},
 	data: () => ({
 		menu: false,
 		menu2: false
 	}),
 	props: {
 		lobby: Object
-	},
-	methods: {
-		dragover(event) {
-			event.preventDefault()
-			event.dataTransfer.dropEffect = 'move'
-		},
-		drop(slot, event) {
-			event.preventDefault()
-			slot.player = JSON.parse(event.dataTransfer.getData('player'))
-		},
-		dragstart(player, event) {
-			let img = new Image(20, 20)
-			img.src = player.osu.avatarUrl
-			event.dataTransfer.setDragImage(img, 10, 10)
-			event.dataTransfer.setData('player', JSON.stringify(player))
-		}
 	}
 }
 </script>
@@ -58,15 +45,8 @@ export default {
 .time-picker
 	width 200px
 	margin-left 20px
-.slot-wrapper
+.players-wrapper
+	min-height 100px
+.player-wrapper
 	margin 10px auto
-.empty-slot
-	display flex
-	width 400px
-	height 100px
-	background-color #090909
-	color white
-.empty-text
-	margin auto
-	font-size 50px
 </style>

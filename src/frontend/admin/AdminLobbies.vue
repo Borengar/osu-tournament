@@ -10,14 +10,20 @@
 	.horizontal
 		.lobbies-wrapper
 			lobby-item.lobby-item(v-for="lobby in lobbies"  :lobby="lobby")
-		.players-wrapper(v-on:dragover="dragover" v-on:drop="drop")
-			.player-wrapper(v-for="player in freePlayers" draggable v-on:dragstart="dragstart(player, $event)")
-				osu-profile(:profile="player.osu")
+		.players-wrapper
+			draggable.players-list(:value="freePlayers"  :options="{group:'players'}" @start="drag=true" @end="drag=false")
+				.player-wrapper(v-for="player in freePlayers")
+					osu-profile(:profile="player.osu")
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
 	name: 'AdminLobbies',
+	components: {
+		draggable
+	},
 	data: () => ({
 		filterRound: null,
 		filterTier: null,
@@ -40,8 +46,8 @@ export default {
 		freePlayers() {
 			return this.players.filter(function(player) {
 				for (let i = 0; i < this.lobbies.length; i++) {
-					for (let j = 0; j < this.lobbies[i].slots.length; j++) {
-						if (this.lobbies[i].slots[j].player && player._id == this.lobbies[i].slots[j].player._id) {
+					for (let j = 0; j < this.lobbies[i].players.length; j++) {
+						if (this.lobbies[i].players[j] && player._id == this.lobbies[i].players[j]._id) {
 							return false
 						}
 					}
@@ -101,29 +107,6 @@ export default {
 			.catch((err) => {
 				console.log(err)
 			})
-		},
-		dragover(event) {
-			event.preventDefault()
-			event.dataTransfer.dropEffect = 'move'
-		},
-		drop(event) {
-			event.preventDefault()
-			let player = JSON.parse(event.dataTransfer.getData('player'))
-			for (let i = 0; i < this.lobbies.length; i++) {
-				for (let j = 0; j < this.lobbies[i].slots.length; j++) {
-					if (this.lobbies[i].slots[j].player && this.lobbies[i].slots[j].player._id == player._id) {
-						this.lobbies[i].slots[j].player = null
-						return
-					}
-				}
-			}
-		},
-		dragstart(player, event) {
-			let img = new Image(20, 20)
-			img.src = player.osu.avatarUrl
-			event.dataTransfer.setDragImage(img, 10, 10)
-			event.dataTransfer.setData('player', JSON.stringify(player))
-			event.dataTransfer.setData('dragFromLobby', false)
 		}
 	},
 	watch: {
@@ -167,6 +150,8 @@ export default {
 	display flex
 	flex-direction column
 	min-width 450px
+.players-list
+	min-height 100%
 .player-wrapper
 	margin 10px
 </style>
