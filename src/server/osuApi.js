@@ -73,6 +73,9 @@ class OsuApi {
 				country: result.data.country.code
 			}
 		})
+		.catch((err) => {
+			return null
+		})
 	}
 
 	getBeatmap(beatmapId) {
