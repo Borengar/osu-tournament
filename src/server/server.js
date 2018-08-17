@@ -56,6 +56,8 @@ MongoClient.connect(config.mongodb.host, {
 	.then(() => {
 		console.log('osu! API connected')
 
+		setInterval(updateOsuCache, 60000, db, osu)
+
 		const discord = new DiscordJS.Client()
 		discord.login(config.discord.botToken)
 		.then((botToken) => {
@@ -134,6 +136,52 @@ function initDb(db) {
 	})
 	.then((result) => {
 		console.log('Settings initialized')
+	})
+	.catch((err) => {
+		console.log(err)
+	})
+}
+
+function updateOsuCache(db, osu) {
+	let collection = db.collection('users')
+	collection.aggregate([
+		{ $match: { 'player': { $exists: true } } },
+		{ $sort: { 'cacheUpdate': 1 } }
+	]).toArray()
+	.then((players) => {
+		if (players.length > 0) {
+			let player = players[0]
+			osu.getUserProfile(player.osu.id)
+			.then((osuProfile) => {
+				if (osuProfile) {
+					console.log('Updating cache of ' + osuProfile.username)
+					return collection.findOneAndUpdate({
+						'osu.id': player.osu.id
+					}, {
+						$set: {
+							osu: osuProfile
+						},
+						$currentDate: {
+							cacheUpdate: true
+						}
+					})
+				} else {
+					return collection.findOneAndUpdate({
+						'osu.id': player.osu.id
+					}, {
+						$currentDate: {
+							cacheUpdate: true
+						}
+					})
+				}
+			})
+			.then((result) => {
+				// nothing
+			})
+			.catch((err) => {
+				console.log(err)
+			})
+		}
 	})
 	.catch((err) => {
 		console.log(err)
