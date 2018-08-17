@@ -154,7 +154,6 @@ function updateOsuCache(db, osu) {
 			osu.getUserProfile(player.osu.id)
 			.then((osuProfile) => {
 				if (osuProfile) {
-					console.log('Updating cache of ' + osuProfile.username)
 					return collection.findOneAndUpdate({
 						'osu.id': player.osu.id
 					}, {
