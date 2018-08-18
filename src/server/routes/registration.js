@@ -22,10 +22,11 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 			}, {
 				$set: {
 					'osu': profile,
-					'registration': {
-						'time': new Date().toISOString(),
-						'active': true
-					}
+					'registration.active': true
+				},
+				$currentDate: {
+					'registration.time': true,
+					'cacheUpdate': true
 				}
 			})
 		})
