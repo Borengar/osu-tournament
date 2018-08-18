@@ -81,8 +81,8 @@ v-app
 		v-toolbar-title {{ routeName }}
 		v-spacer
 		discord-profile(:profile="discordProfile")
-	v-content
-		v-container(fluid)
+	v-content(grid-list-lg)
+		v-container(fluid fill-height)
 			router-view
 </template>
 
@@ -113,14 +113,4 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.flex
-	flex 1 0
-.no-flex
-	flex 0 0
-.horizontal
-	display flex
-	flex-direction row
-.vertical
-	display flex
-	flex-direction column
 </style>
