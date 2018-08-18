@@ -1,5 +1,5 @@
 <template lang="pug">
-.wrapper
+v-layout(column)
 	h1 PROJECT REKINDLING
 	div Welcome to the Project REKINDLING Registration!
 	div By going through the previous page you've registered on our site with your Discord account. Input your osu! username below to link your osu! account with our site and to register for the tournament.
@@ -7,15 +7,15 @@
 	div If your registration is accepted you will be automatically assigned the appropriate Discord role on our server.
 	h2 Your osu! account
 	div(v-if="!registerHidden")
-		.horizontal.search-wrapper
+		v-layout(row).width-400
 			v-text-field(label="Name" v-model="osuUsername" @keyup.enter="search")
 			v-btn(@click="search" color="success") Search
 		osu-profile(:profile="registrationProfile")
-		v-btn.register-button(v-if="registrationProfile.id" @click="register" color="success") Register
+		v-btn.mt-2.ml-0.width-400(v-if="registrationProfile.id" @click="register" color="success") Register
 	div(v-if="registerHidden")
 		osu-profile(:profile="osuProfile")
 		h2 Your availability
-		v-data-table.elevation-1.availability-table(:items="timeslots" item-key="id" v-model="availability" select-all)
+		v-data-table.elevation-1.mt-2.width-400(:items="timeslots" item-key="id" v-model="availability" select-all)
 			template(slot="headers" slot-scope="props")
 				tr
 					th
@@ -28,9 +28,9 @@
 						v-checkbox(v-model="props.selected" primary hide-details)
 					td.text-xs-left {{ props.item.day }}
 					td.text-xs-left {{ props.item.time }}
-		.vertical
-			v-btn.register-button(@click="saveAvailability" color="success") Save
-			v-btn.register-button(@click="showDeleteDialog" color="error") Delete registration
+		v-layout(column)
+			v-btn.mt-2.ml-0.width-400(@click="saveAvailability" color="success") Save
+			v-btn.mt-2.ml-0.width-400(@click="showDeleteDialog" color="error") Delete registration
 	v-dialog(v-model="deleteDialogVisible" max-width="300")
 		v-card
 			v-card-title.headline Delete registration?
@@ -124,29 +124,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.flex
-	flex 1 0
-.no-flex
-	flex 0 0
-.horizontal
-	display flex
-	flex-direction row
-.vertical
-	display flex
-	flex-direction column
-.search-input
-	width 200px
 .search-button
 	margin-top 15px
-	background-color #2e3136 !important
-	color white !important
-.availability-table
-	width 400px
-	margin-top 20px
-.search-wrapper
-	width 400px
-.register-button
+.width-400
 	width 400px !important
-	margin-left 0
-	margin-top 20px
 </style>
