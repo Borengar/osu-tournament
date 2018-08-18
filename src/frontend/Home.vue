@@ -1,10 +1,9 @@
 <template lang="pug">
-#app.vertical
-	.flex
-	.horizontal
-		.flex
+v-layout(column align-center)
+	v-flex(md6)
+		img.header-image(src="./images/index_header.png")
+	v-flex(md6)
 		v-btn.md-raised.login-button(@click="login") Login
-		.flex
 </template>
 
 <script>
@@ -41,22 +40,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.flex
-	flex 1 0
-.no-flex
-	flex 0 0
-.horizontal
-	display flex
-	flex-direction row
-.vertical
-	display flex
-	flex-direction column
-#app
-	background-image url('./images/index_header.png')
-	background-repeat no-repeat
-	background-size 100%
-	height 100%
-	width 100%
+.header-image
+	max-width 100%
 .login-button
 	width 200px
 	height 200px
