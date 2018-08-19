@@ -1,27 +1,29 @@
 <template lang="pug">
-.wrapper
-	.list-wrapper
-		h2 Timeslots
-		v-data-table.elevation-1(:items="timeslots" item-key="_id")
-			template(slot="headers" slot-scope="props")
-				tr
-					th(align="left") Day
-					th(align="left") Time
-					th(align="right") Actions
-			template(slot="items" slot-scope="props")
-				tr
-					td.text-xs-left {{ props.item.day }}
-					td.text-xs-left {{ props.item.time }}
-					td.text-xs-right
-						v-icon(small @click="deleteTimeslot(props.item)" :disabled="editVisible") delete
-		v-btn(@click="createTimeslot" color="success") New timeslot
-	.edit-wrapper(v-if="editVisible" v-model="editValid")
-		h2 New timeslot
-		v-select(label="Day" v-model="timeslot.day" :items="days")
-		v-time-picker(v-model="timeslot.time" format="24hr")
-		.horizontal
-			v-btn(@click="cancel") Cancel
-			v-btn(@click="saveTimeslot" color="success") Save
+v-layout(row)
+	v-flex(lg6).mr-5
+		v-layout(column)
+			h2 Timeslots
+			v-data-table.elevation-1(:items="timeslots" item-key="_id")
+				template(slot="headers" slot-scope="props")
+					tr
+						th(align="left") Day
+						th(align="left") Time
+						th(align="right") Actions
+				template(slot="items" slot-scope="props")
+					tr
+						td.text-xs-left {{ props.item.day }}
+						td.text-xs-left {{ props.item.time }}
+						td.text-xs-right
+							v-icon(small @click="deleteTimeslot(props.item)" :disabled="editVisible") delete
+			v-btn.mx-0(@click="createTimeslot" color="success") New timeslot
+	v-flex(lg6)
+		v-layout(column v-if="editVisible").edit-wrapper
+			h2 New timeslot
+			v-select(label="Day" v-model="timeslot.day" :items="days")
+			v-time-picker(v-model="timeslot.time" format="24hr")
+			div
+				v-btn.ml-0(@click="cancel") Cancel
+				v-btn(@click="saveTimeslot" color="success") Save
 </template>
 
 <script>
@@ -81,28 +83,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrapper
-	display flex
-	flex-direction row
-.list-wrapper
-	display flex
-	flex-direction column
-	width 500px
-.new-button
-	width 150px
 .edit-wrapper
-	display flex
-	flex-direction column
-	width 500px
-	margin-left 20px
-.horizontal
-	display flex
-	flex-direction row
-.day-field
-	width 150px
-	margin-right 10px
-.time-field
-	width 50px
-.time-separator
-	margin 27px 10px 0 10px
+	width 290px
 </style>
