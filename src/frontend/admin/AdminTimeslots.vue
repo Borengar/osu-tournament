@@ -77,6 +77,9 @@ export default {
 			.catch((err) => {
 				console.log(err)
 			})
+		},
+		cancel() {
+			this.editVisible = false
 		}
 	}
 }
