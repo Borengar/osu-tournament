@@ -1,5 +1,5 @@
 <template lang="pug">
-.wrapper
+v-layout(row wrap)
 	v-btn.big-button(to="/admin/bracket") Bracket
 	v-btn.big-button(to="/admin/roles") Roles
 	v-btn.big-button(to="/admin/lobbies") Lobbies
@@ -18,9 +18,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrapper
-	flex-direction row
-	flex-wrap wrap
 .big-button
 	width 200px
 	height 200px
