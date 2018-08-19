@@ -59,7 +59,7 @@ export default {
 			}
 			if (this.filterSearch) {
 				players = players.filter(function (player) {
-					return player.osu.username.toLowerCase().includes(this.filterSearch.toLowerCase()) || player.discord.username.toLowerCase().includes(this.filterSearch.toLowerCase())
+					return (player.osu.username && player.osu.username.toLowerCase().includes(this.filterSearch.toLowerCase())) || (player.discord.username && player.discord.username.toLowerCase().includes(this.filterSearch.toLowerCase()))
 				}, this)
 			}
 			return players
