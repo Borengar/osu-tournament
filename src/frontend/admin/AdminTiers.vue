@@ -1,33 +1,35 @@
 <template lang="pug">
-.wrapper
-	.list-wrapper
-		h2 Tiers
-		v-data-table.elevation-1(:items="tiers" item-key="_id")
-			template(slot="headers" slot-scope="props")
-				tr
-					th(align="left") Name
-					th(align="left") Seeding
-					th(align="right") Actions
-			template(slot="items" slot-scope="props")
-				tr
-					td.text-xs-left {{ props.item.name }}
-					td.text-xs-left {{ props.item.seedingMode }}
-					td.text-xs-right
-						v-icon.mr-2(small @click="editTier(props.item)" :disabled="editVisible") edit
-						v-icon(small @click="showDeleteDialog(props.item)" :disabled="editVisible") delete
-		v-btn(@click="createTier" color="success") New tier
-	v-form.edit-wrapper(v-if="editVisible" v-model="editValid")
-		h2 {{ editHeader }}
-		v-text-field(label="Name" v-model="tier.name" :rules="[rules.required]")
-		.horizontal
-			v-text-field(label="Lower endpoint" v-model="tier.lowerEnd" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
-			.endpoint-divider -
-			v-text-field(label="Upper endpoint" v-model="tier.upperEnd" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
-		v-select(label="Starting round" v-model="tier.startingRound" :items="choosableRounds()" item-text="name" item-value="_id" :rules="[rules.required]")
-		v-select(label="Seeding mode" v-model="tier.seedingMode" :items="seedingModes" :rules="[rules.required]")
-		.horizontal
-			v-btn(@click="cancel") Cancel
-			v-btn(@click="saveTier" color="success" :disabled="!editValid") Save
+v-layout(row)
+	v-flex(lg6).mr-5
+		v-layout(column)
+			h2 Tiers
+			v-data-table.elevation-1(:items="tiers" item-key="_id")
+				template(slot="headers" slot-scope="props")
+					tr
+						th(align="left") Name
+						th(align="left") Seeding
+						th(align="right") Actions
+				template(slot="items" slot-scope="props")
+					tr
+						td.text-xs-left {{ props.item.name }}
+						td.text-xs-left {{ props.item.seedingMode }}
+						td.text-xs-right
+							v-icon.mr-2(small @click="editTier(props.item)" :disabled="editVisible") edit
+							v-icon(small @click="showDeleteDialog(props.item)" :disabled="editVisible") delete
+			v-btn.mx-0(@click="createTier" color="success") New tier
+	v-flex(lg6)
+		v-layout(column v-if="editVisible")
+			v-form(v-model="editValid")
+				h2 {{ editHeader }}
+				v-text-field(label="Name" v-model="tier.name" :rules="[rules.required]")
+				v-layout(row)
+					v-text-field(label="Lower endpoint" v-model="tier.lowerEnd" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+					.mx-2.mt-4 -
+					v-text-field(label="Upper endpoint" v-model="tier.upperEnd" type="number" :rules="[rules.required, rules.greaterZero, rules.integer]")
+				v-select(label="Starting round" v-model="tier.startingRound" :items="choosableRounds()" item-text="name" item-value="_id" :rules="[rules.required]")
+				v-select(label="Seeding mode" v-model="tier.seedingMode" :items="seedingModes" :rules="[rules.required]")
+				v-btn(@click="cancel") Cancel
+				v-btn(@click="saveTier" color="success" :disabled="!editValid") Save
 	v-dialog(v-model="deleteDialogVisible" max-width="300")
 		v-card
 			v-card-title.headline Delete this tier?
@@ -142,25 +144,4 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrapper
-	display flex
-	flex-direction row
-.list-wrapper
-	display flex
-	flex-direction column
-	width 500px
-.new-button
-	width 150px
-.edit-wrapper
-	display flex
-	flex-direction column
-	width 500px
-	margin-left 20px
-.horizontal
-	display flex
-	flex-direction row
-.flex
-	flex 1 0
-.endpoint-divider
-	margin 28px 15px 0 15px
 </style>
