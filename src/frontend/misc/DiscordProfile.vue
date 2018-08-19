@@ -1,6 +1,6 @@
 <template lang="pug">
-.wrapper.horizontal
-	.avatar(:style='avatarUrl')
+v-layout.wrapper(row)
+	.avatar.mr-2.mt-2(:style='avatarUrl')
 	.username {{ profile.username }}\#{{ profile.discriminator }}
 </template>
 
@@ -22,17 +22,13 @@ export default {
 
 <style lang="stylus" scoped>
 .wrapper
-	width 300px
+	max-width 300px
 	height 64px
-.horizontal
-	display flex
-	flex-direction row
 .avatar
 	width 50px
 	height 50px
 	border-radius 50%
 	background-size 50px 50px
-	margin 7px 10px
 .username
 	line-height 64px
 	font-size 20px
