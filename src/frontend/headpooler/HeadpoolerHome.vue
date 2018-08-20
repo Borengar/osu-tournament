@@ -1,5 +1,5 @@
 <template lang="pug">
-.wrapper
+v-layout(row wrap)
 	v-btn.big-button(to="/headpooler/mappools") Mappools
 	v-btn.big-button(to="/headpooler/feedback") Feedback
 </template>
@@ -11,9 +11,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrapper
-	flex-direction row
-	flex-wrap wrap
 .big-button
 	width 200px
 	height 200px

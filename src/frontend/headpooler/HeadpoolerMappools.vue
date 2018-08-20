@@ -1,73 +1,78 @@
 <template lang="pug">
-.wrapper
-	.horizontal
-		v-select.mappool-select(label="Round" v-model="selectedRound"  :items="rounds" item-text="name" item-value="_id")
-		v-select.mappool-select(label="Tier" v-model="selectedTier"  :items="tiers" item-text="name" item-value="_id")
-	.mappool-wrapper
-		.list-wrapper(v-if="mappool._id")
-			v-data-table.elevation-1(:items="mappool.slots" item-key="beatmap.id" hide-actions)
-				template(slot="headers" slot-scope="props")
-					tr
-						th(align="left") Mods
-						th(align="left") Beatmap
-						th(align="right") Actions
-				template(slot="items" slot-scope="props")
-					tr
-						td.text-xs-left {{ sortMods(props.item.mods).join('') }}
-						td.text-xs-left {{ props.item.beatmap.beatmapset.title }}
-						td.text-xs-right.horizontal
-							v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_up
-							v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_down
-							v-icon.mr-2(small @click="editSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") edit
-							v-icon(small @click="deleteSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") delete
-			.horizontal
-				v-btn(@click="addSlot" color="success") Add beatmap
-				v-btn(@click="addMultipleSlots" color="success") Bulk add
-				v-btn(@click="saveMappool" color="success") Save
-		.add-wrapper(v-if="addVisible")
-			h2 Add beatmap
-			.horizontal
-				v-text-field(label="Beatmap ID" v-model="beatmapQuery" @keyup.enter="searchBeatmap")
-				v-btn(@click="searchBeatmap" color="success") Search
-			div(v-if="beatmap")
-				beatmap-big(:beatmap="beatmap"  :mods="sortMods(mods)")
-				.horizontal
-					v-checkbox(v-model="mods" label="HD" value="HD")
-					v-checkbox(v-model="mods" label="HR" value="HR")
-					v-checkbox(v-model="mods" label="DT" value="DT")
-					v-checkbox(v-model="mods" label="Freemod" value="Freemod")
-					v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
-			div(v-if="beatmapset")
-				h3 Please choose a difficulty.
-				v-radio-group(v-model="difficulty")
-					v-radio(v-for="beatmap in beatmapset.beatmaps"  :key="beatmap.id"  :value="beatmap.id"  :label="`${beatmap.version} (${beatmap.difficulty_rating.toPrecision(2)}* CS${beatmap.cs} HP${beatmap.drain} OD${beatmap.accuracy} AR${beatmap.ar})`")
-			div(v-if="beatmapsets.length")
-				h3 Search result
-				v-radio-group(v-model="chosenSet")
-					v-radio(v-for="set in beatmapsets"  :key="set.id"  :value="set"  :label="`${set.artist} - ${set.title} (by ${set.creator})`")
-			.horizontal
-				v-btn(@click="cancel") Cancel
-				v-btn(@click="addBeatmap" v-if="beatmap" color="success") Add
-				v-btn(@click="chooseDifficulty" v-if="difficulty" color="success") Choose
-				v-btn(@click="chooseSet" v-if="chosenSet" color="success") Choose
-		.bulk-wrapper(v-if="bulkAddVisible")
-			h2 Add multiple beatmaps
-			v-textarea(label="Beatmaps" v-model="beatmapQuery")
-			.horizontal
-				v-btn(@click="cancel") Cancel
-				v-btn(@click="startBulkAdd" color="success") Start
-		.edit-wrapper(v-if="editVisible")
-			h2 Edit beatmap
-			beatmap-big(:beatmap="beatmap"  :mods="sortMods(mods)")
-			.horizontal
-				v-checkbox(v-model="mods" label="HD" value="HD")
-				v-checkbox(v-model="mods" label="HR" value="HR")
-				v-checkbox(v-model="mods" label="DT" value="DT")
-				v-checkbox(v-model="mods" label="Freemod" value="Freemod")
-				v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
-			.horizontal
-				v-btn(@click="cancel") Cancel
-				v-btn(@click="saveBeatmap" v-if="beatmap") Save
+v-layout(column)
+	div
+		v-layout(row)
+			v-select.mr-2.mappool-select(label="Round" v-model="selectedRound"  :items="rounds" item-text="name" item-value="_id")
+			v-select.mappool-select(label="Tier" v-model="selectedTier"  :items="tiers" item-text="name" item-value="_id")
+	div
+		v-layout(row v-if="mappool._id")
+			v-flex(lg6).mr-5
+				v-layout(column)
+					v-data-table.elevation-1(:items="mappool.slots" item-key="beatmap.id" hide-actions)
+						template(slot="headers" slot-scope="props")
+							tr
+								th(align="left") Mods
+								th(align="left") Beatmap
+								th(align="right") Actions
+						template(slot="items" slot-scope="props")
+							tr
+								td.text-xs-left {{ sortMods(props.item.mods).join('') }}
+								td.text-xs-left {{ props.item.beatmap.beatmapset.title }}
+								td.text-xs-right.horizontal
+									v-icon.mr-2(small @click="moveUp(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_up
+									v-icon.mr-2(small @click="moveDown(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") keyboard_arrow_down
+									v-icon.mr-2(small @click="editSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") edit
+									v-icon(small @click="deleteSlot(props.item)"  :disabled="addVisible || bulkAddVisible || editVisible") delete
+					v-layout(row)
+						v-btn(@click="addSlot" color="success") Add beatmap
+						v-btn(@click="addMultipleSlots" color="success") Bulk add
+						v-btn(@click="saveMappool" color="success") Save
+			v-flex(lg6)
+				v-layout(column v-if="addVisible")
+					h2 Add beatmap
+					div
+						v-layout(row)
+							v-text-field(label="Beatmap ID" v-model="beatmapQuery" @keyup.enter="searchBeatmap")
+							v-btn(@click="searchBeatmap" color="success") Search
+					div(v-if="beatmap")
+						beatmap-big(:beatmap="beatmap"  :mods="sortMods(mods)")
+						v-layout(row)
+							v-checkbox(v-model="mods" label="HD" value="HD")
+							v-checkbox(v-model="mods" label="HR" value="HR")
+							v-checkbox(v-model="mods" label="DT" value="DT")
+							v-checkbox(v-model="mods" label="Freemod" value="Freemod")
+							v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
+					div(v-if="beatmapset")
+						h3 Please choose a difficulty.
+						v-radio-group(v-model="difficulty")
+							v-radio(v-for="beatmap in beatmapset.beatmaps"  :key="beatmap.id"  :value="beatmap.id"  :label="`${beatmap.version} (${beatmap.difficulty_rating.toPrecision(2)}* CS${beatmap.cs} HP${beatmap.drain} OD${beatmap.accuracy} AR${beatmap.ar})`")
+					div(v-if="beatmapsets.length")
+						h3 Search result
+						v-radio-group(v-model="chosenSet")
+							v-radio(v-for="set in beatmapsets"  :key="set.id"  :value="set"  :label="`${set.artist} - ${set.title} (by ${set.creator})`")
+					v-layout(row)
+						v-btn(@click="cancel") Cancel
+						v-btn(@click="addBeatmap" v-if="beatmap" color="success") Add
+						v-btn(@click="chooseDifficulty" v-if="difficulty" color="success") Choose
+						v-btn(@click="chooseSet" v-if="chosenSet" color="success") Choose
+				v-layout(column v-if="bulkAddVisible")
+					h2 Add multiple beatmaps
+					v-textarea(label="Beatmaps" v-model="beatmapQuery")
+					v-layout(row)
+						v-btn(@click="cancel") Cancel
+						v-btn(@click="startBulkAdd" color="success") Start
+				v-layout(column v-if="editVisible")
+					h2 Edit beatmap
+					beatmap-big(:beatmap="beatmap"  :mods="sortMods(mods)")
+					v-layout(row)
+						v-checkbox(v-model="mods" label="HD" value="HD")
+						v-checkbox(v-model="mods" label="HR" value="HR")
+						v-checkbox(v-model="mods" label="DT" value="DT")
+						v-checkbox(v-model="mods" label="Freemod" value="Freemod")
+						v-checkbox(v-model="mods" label="Tiebreaker" value="Tiebreaker")
+					v-layout(row)
+						v-btn(@click="cancel") Cancel
+						v-btn(@click="saveBeatmap" v-if="beatmap" color="success") Save
 </template>
 
 <script>
@@ -337,30 +342,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrapper
-	display flex
-	flex-direction column
-.horizontal
-	display flex
-	flex-direction row
 .mappool-select
 	max-width 250px
-	margin-right 20px
-.mappool-wrapper
-	display flex
-	flex-direction row
-.list-wrapper
-	display flex
-	flex-direction column
-	width 500px
-.add-wrapper
-	display flex
-	flex-direction column
-	margin-left 20px
-	width 1000px
-.bulk-wrapper
-	display flex
-	flex-direction column
-	margin-left 20px
-	width 300px
 </style>
