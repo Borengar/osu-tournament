@@ -1,19 +1,23 @@
 <template lang="pug">
-.wrapper
-	.filter-wrapper
-		v-select.filter(label="Round" v-model="filterRound"  :items="rounds" item-text="name" item-value="_id")
-		v-select.filter(label="Tier" v-model="filterTier"  :items="tiers" item-text="name" item-value="_id")
-	.action-wrapper
-		v-btn.action(@click="createLobbies" v-if="noLobbies" color="success") Create lobbies
-		v-btn.action(@click="saveLobbies" v-if="lobbiesExist" color="success") Save lobbies
-		v-btn.action(@click="deleteLobbies" v-if="lobbiesExist" color="error") Delete lobbies
-	.horizontal
-		.lobbies-wrapper
-			lobby-item.lobby-item(v-for="lobby in lobbies"  :lobby="lobby")
-		.players-wrapper
-			draggable.players-list(:value="freePlayers"  :options="{group:'players'}" @start="drag=true" @end="drag=false")
-				.player-wrapper(v-for="player in freePlayers")
-					osu-profile(:profile="player.osu")
+v-layout(column)
+	div
+		v-layout(row)
+			v-select.mr-2.filter(label="Round" v-model="filterRound"  :items="rounds" item-text="name" item-value="_id")
+			v-select.filter(label="Tier" v-model="filterTier"  :items="tiers" item-text="name" item-value="_id")
+	div
+		v-layout(row)
+			v-btn.action(@click="createLobbies" v-if="noLobbies" color="success") Create lobbies
+			v-btn.action(@click="saveLobbies" v-if="lobbiesExist" color="success") Save lobbies
+			v-btn.action(@click="deleteLobbies" v-if="lobbiesExist" color="error") Delete lobbies
+	v-flex
+		v-layout(row)
+			v-flex
+				v-layout(row wrap).lobbies-wrapper
+					lobby-item.ma-1(v-for="lobby in lobbies"  :lobby="lobby"  :size="filterRound.lobbySize")
+			div
+				v-layout(column)
+					draggable.players-wrapper(:value="freePlayers"  :options="{group:'players'}" @start="drag=true" @end="drag=false")
+						osu-profile.ma-1(v-for="player in freePlayers"  :profile="player.osu")
 </template>
 
 <script>
@@ -123,35 +127,22 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrapper
-	display flex
-	flex-direction column
-.filter-wrapper
-	display flex
-	flex-direction row
 .filter
 	max-width 300px
-	margin-right 20px
-.action-wrapper
-	display flex
-	flex-direction row
-.action
-	max-width 300px
-.horizontal
-	display flex
-	flex-direction row
+.relative
+	position relative
 .lobbies-wrapper
-	display flex
-	flex-direction row
-	flex-wrap wrap
-.lobby-item
-	margin 10px
+	position absolute
+	top 150px
+	bottom 20px
+	left 0
+	right 450px
+	overflow auto
 .players-wrapper
-	display flex
-	flex-direction column
-	min-width 450px
-.players-list
-	min-height 100%
-.player-wrapper
-	margin 10px
+	position absolute
+	top 20px
+	bottom 20px
+	right 0
+	left calc(100% - 450px)
+	overflow auto
 </style>
