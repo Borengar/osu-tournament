@@ -15,7 +15,7 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 		let collection = db.collection('users')
 		collection.find({
 			'player.tier._id': ObjectId(req.params.tierId),
-			'player.nextRound._id': ObjectId(req.params.roundId)
+			'player.rounds': { $elemMatch: { $eq: ObjectId(req.params.roundId) } }
 		}).toArray()
 		.then((players) => {
 			res.json(players)
@@ -61,7 +61,7 @@ module.exports = function(app, db, axios, config, ObjectId, discord, osu) {
 							player: {
 								tier: tier,
 								currentLobby: null,
-								nextRound: round
+								rounds: [ ObjectId(round._id) ]
 							}
 						}
 					}))
