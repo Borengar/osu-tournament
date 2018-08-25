@@ -13,10 +13,10 @@ v-layout(column)
 		v-layout(row)
 			v-flex
 				v-layout(row wrap).lobbies-wrapper
-					lobby-item.ma-1(v-for="lobby in lobbies"  :lobby="lobby"  :size="filterRound.lobbySize")
+					lobby-item.ma-1(v-for="lobby in lobbies"  :lobby="lobby")
 			div
 				v-layout(column)
-					draggable.players-wrapper(:value="freePlayers"  :options="{group:'players'}" @start="drag=true" @end="drag=false")
+					draggable#players.players-wrapper(:value="freePlayers"  :options="{group:'players'}" @start="drag=true" @end="drag=false"  :move="checkMove")
 						osu-profile.ma-1(v-for="player in freePlayers"  :profile="player.osu")
 </template>
 
@@ -58,6 +58,11 @@ export default {
 				}
 				return true
 			}, this)
+		},
+		lobbySize() {
+			return this.$store.state.rounds.find((round) => {
+				return this.filterRound == round._id
+			}, this).lobbySize
 		}
 	},
 	methods: {
@@ -111,6 +116,12 @@ export default {
 			.catch((err) => {
 				console.log(err)
 			})
+		},
+		checkMove(e) {
+			if (e.relatedContext.component.$el.id != 'players' && e.relatedContext.list.length >= this.lobbySize) {
+				return false
+			}
+			return true
 		}
 	},
 	watch: {

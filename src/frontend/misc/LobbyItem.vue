@@ -8,7 +8,7 @@ v-card.wrapper
 		v-menu.mx-2(ref="menu2"  :close-on-content-click="false"  v-model="menu2"  :return-value.sync="lobby.time" lazy transition="scale-transition" offset-y full-width)
 			v-text-field(slot="activator" v-model="lobby.time" label="Time" prepend-icon="access_time" readonly)
 			v-time-picker(v-model="lobby.time" format="24hr" @input="$refs.menu2.save(lobby.time)")
-	draggable.players-wrapper(v-model="lobby.players"  :options="{group:'players'}" @start="drag=true" @end="drag=false"  :move="checkMove")
+	draggable.players-wrapper(v-model="lobby.players"  :options="{group:'players'}" @start="drag=true" @end="drag=false")
 		.mx-4.my-2(v-for="player in lobby.players")
 			osu-profile(v-if="player"  :profile="player.osu")
 </template>
@@ -26,16 +26,7 @@ export default {
 		menu2: false
 	}),
 	props: {
-		lobby: Object,
-		size: 0
-	},
-	methods: {
-		checkMove(event) {
-			if (this.lobby.players.length == this.size) {
-				return false
-			}
-			return true
-		}
+		lobby: Object
 	}
 }
 </script>
